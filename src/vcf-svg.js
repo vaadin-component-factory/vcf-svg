@@ -12,10 +12,10 @@ import { ElementMixin } from '@vaadin/vaadin-element-mixin';
 import '@vaadin/vaadin-license-checker/vaadin-license-checker';
 
 /**
- * `<vcf-element>` --elementdescription--
+ * `<vcf-svg>` Web component for manipulating and animating SVG graphics.
  *
  * ```html
- * <vcf-element></vcf-element>
+ * <vcf-svg></vcf-svg>
  * ```
  *
  * ### Styling
@@ -24,7 +24,7 @@ import '@vaadin/vaadin-license-checker/vaadin-license-checker';
  *
  * Custom property | Description | Default
  * ----------------|-------------|-------------
- * `--vcf-element-property` | Example custom property | `unset`
+ * `--vcf-svg-property` | Example custom property | `unset`
  *
  * The following shadow DOM parts are available for styling:
  *
@@ -43,7 +43,7 @@ import '@vaadin/vaadin-license-checker/vaadin-license-checker';
  * @mixes ThemableMixin
  * @demo demo/index.html
  */
-class VcfElement extends ElementMixin(ThemableMixin(PolymerElement)) {
+class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   static get template() {
     return html`
       <style>
@@ -51,12 +51,12 @@ class VcfElement extends ElementMixin(ThemableMixin(PolymerElement)) {
           display: block;
         }
       </style>
-      <slot>vcf-element</slot>
+      <slot>vcf-svg</slot>
     `;
   }
 
   static get is() {
-    return 'vcf-element';
+    return 'vcf-svg';
   }
 
   static get version() {
@@ -76,14 +76,14 @@ class VcfElement extends ElementMixin(ThemableMixin(PolymerElement)) {
     const devModeCallback = window.Vaadin.developmentModeCallback;
     const licenseChecker = devModeCallback && devModeCallback['vaadin-license-checker'];
     if (typeof licenseChecker === 'function') {
-      licenseChecker(VcfElement);
+      licenseChecker(VcfSvg);
     }
   }
 }
 
-customElements.define(VcfElement.is, VcfElement);
+customElements.define(VcfSvg.is, VcfSvg);
 
 /**
  * @namespace Vaadin
  */
-window.Vaadin.VcfElement = VcfElement;
+window.Vaadin.VcfSvg = VcfSvg;

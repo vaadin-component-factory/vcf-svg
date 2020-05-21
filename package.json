@@ -1,19 +1,19 @@
 {
-  "name": "@vaadin-component-factory/vcf-element",
+  "name": "@vaadin-component-factory/vcf-svg",
   "version": "0.1.0",
-  "description": "--elementdescription--",
-  "main": "theme/lumo/vcf-element.js",
+  "description": "Web component for manipulating and animating SVG graphics.",
+  "main": "theme/lumo/vcf-svg.js",
   "author": "Vaadin Ltd",
   "license": "https://raw.githubusercontent.com/vaadin/vaadin-incubator-element/master/LICENSE",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vaadin-component-factory/vcf-element.git"
+    "url": "git+https://github.com/vaadin-component-factory/vcf-svg.git"
   },
   "keywords": [
     "Vaadin",
     "vaadin-incubator-element",
     "vaadin-component-factory",
-    "vcf-element",
+    "vcf-svg",
     "web-components",
     "web-component",
     "polymer"
@@ -26,7 +26,6 @@
     "build:prod": "run-s build:api build:demo",
     "build:api": "npm run prestart && polymer build",
     "build:demo": "webpack",
-    "postinstall": "node util/init.js",
     "publish": "node util/publish.js"
   },
   "husky": {
@@ -94,9 +93,9 @@
     "webpack-merge": "^4.2.1"
   },
   "bugs": {
-    "url": "https://github.com/vaadin-component-factory/vcf-element/issues"
+    "url": "https://github.com/vaadin-component-factory/vcf-svg/issues"
   },
-  "homepage": "https://github.com/vaadin-component-factory/vcf-element#readme",
+  "homepage": "https://github.com/vaadin-component-factory/vcf-svg#readme",
   "directories": {
     "test": "test"
   }
