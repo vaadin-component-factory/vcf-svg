@@ -20,6 +20,10 @@ const assets = [
   {
     from: resolve('./demo/favicon.ico'),
     to: OUTPUT_PATH
+  },
+  {
+    from: resolve('./demo/svg-js-logo.png'),
+    to: OUTPUT_PATH
   }
 ];
 
@@ -112,15 +116,7 @@ const productionConfig = merge([
     },
     plugins: [
       new CopyWebpackPlugin([...polyfills, ...assets]),
-      new HtmlWebpackPlugin({
-        template: INDEX_TEMPLATE,
-        minify: {
-          collapseWhitespace: true,
-          removeComments: true,
-          minifyCSS: true,
-          minifyJS: true
-        }
-      }),
+      new HtmlWebpackPlugin({ template: INDEX_TEMPLATE }),
       new HtmlReplaceWebpackPlugin([
         {
           pattern: /<script dev.*?src=".*?\.js".*?<\/script>/g,
