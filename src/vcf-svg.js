@@ -9,6 +9,7 @@
 import { html, PolymerElement } from '@polymer/polymer/polymer-element';
 import { ThemableMixin } from '@vaadin/vaadin-themable-mixin';
 import { ElementMixin } from '@vaadin/vaadin-element-mixin';
+import { SVG, Svg } from '@svgdotjs/svg.js';
 import '@vaadin/vaadin-license-checker/vaadin-license-checker';
 
 /**
@@ -51,7 +52,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
           display: block;
         }
       </style>
-      <slot>vcf-svg</slot>
+      <slot id="svgSlot" name="svg"></slot>
     `;
   }
 
@@ -64,7 +65,37 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   }
 
   static get properties() {
-    return {};
+    return {
+      /**
+       * Main SVG document.
+       *
+       * Refer to [SVG.js Docs](https://svgjs.com/docs/3.0) for more info.
+       * @type {Svg}
+       */
+      draw: Svg,
+      /**
+       * 1. [SVG() | Constructor](https://svgjs.com/docs/3.0/container-elements/#svg-constructor)
+       * 1. [SVG() | Find](https://svgjs.com/docs/3.0/referencing-creating-elements/#svg)
+       * @type {SVG}
+       */
+      SVG: {
+        type: Object,
+        value: SVG
+      }
+    };
+  }
+
+  ready() {
+    super.ready();
+    this.draw = SVG()
+      .addTo(this)
+      .attr({ slot: 'svg' });
+    this.$.svgSlot.addEventListener('slotchange', () => this._onSvgSlotChange());
+  }
+
+  _onSvgSlotChange() {
+    const slotted = this.$.svgSlot.assignedNodes().filter(node => node.tagName.toLowerCase() === 'svg');
+    if (slotted.length) this.draw = SVG(slotted[0]);
   }
 
   /**
@@ -72,7 +103,6 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
    */
   static _finalizeClass() {
     super._finalizeClass();
-
     const devModeCallback = window.Vaadin.developmentModeCallback;
     const licenseChecker = devModeCallback && devModeCallback['vaadin-license-checker'];
     if (typeof licenseChecker === 'function') {
@@ -80,6 +110,8 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
     }
   }
 }
+
+export * from '@svgdotjs/svg.js';
 
 customElements.define(VcfSvg.is, VcfSvg);
 
