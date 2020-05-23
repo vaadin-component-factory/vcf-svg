@@ -12,8 +12,16 @@
           background-color: var(--lumo-base-color);
           padding: 0;
         }
-        h1 {
+        h1.main {
+          display: flex;
+          align-items: center;
           padding: 0 0 var(--lumo-space-l) var(--lumo-space-m);
+        }
+        h1.main a {
+          margin: 0 var(--lumo-space-m) 0 auto;
+        }
+        h1.main img {
+          height: 3em;
         }
         h2 {
           padding: var(--lumo-space-l) 0 var(--lumo-space-l) var(--lumo-space-m);
@@ -59,44 +67,232 @@
         </vaadin-button>
       </a>
 
-      <h1 slot="header" class="hidden"><code>&lt;vcf-svg&gt;</code></h1>
+      <h1 slot="header" class="main hidden">
+        <code>&lt;vcf-svg&gt;</code>
+        <a href="https://svgjs.com/docs/3.0/" title="Wrapper for SVG.js"><img src="svg-js-logo.png"/></a>
+      </h1>
 
-      <vcf-anchor-nav-section name="Example 1">
-        <h2 slot="header" class="hidden">Example 1</h2>
+      <vcf-anchor-nav-section name="Animated Text Path">
+        <h2 slot="header" class="hidden">Animated Text Path</h2>
         <demo-snippet>
           <template>
+            <vaadin-text-field value="< v c f - s v g >"></vaadin-text-field>
             <vcf-svg></vcf-svg>
             <script>
               window.addEventListener('WebComponentsReady', () => {
-                // Example 1
+                const draw = document.querySelector('vcf-svg').draw.viewbox(0, 0, 300, 140);
+                const input = document.querySelector('vaadin-text-field');
+                const text = draw.text(add => add.tspan(input.value));
+                const updateText = textPath => () => textPath.tspan(input.value);
+                const textPath = text.path('M10 80 C 40 10, 65 10, 95 80 S 150 150, 180 80');
+                textPath
+                  .animate(1000)
+                  .ease('<>')
+                  .plot('M10 80 C 40 150, 65 150, 95 80 S 150 10, 180 80')
+                  .loop(true, true);
+                input.addEventListener('input', updateText(textPath));
               });
             </script>
           </template>
         </demo-snippet>
       </vcf-anchor-nav-section>
 
-      <vcf-anchor-nav-section name="Example 2">
-        <h2 slot="header" class="hidden">Example 2</h2>
+      <vcf-anchor-nav-section name="Shapes and Paths">
+        <h2 slot="header" class="hidden">Shapes and Paths</h2>
         <demo-snippet>
           <template>
-            <vcf-svg></vcf-svg>
+            <vcf-svg id="shapes"></vcf-svg>
             <script>
               window.addEventListener('WebComponentsReady', () => {
-                // Example 2
+                const draw = document.querySelector('#shapes').draw.viewbox(0, 0, 380, 380);
+                const size = 100;
+                const space = size + 20;
+                let x = 20;
+                let y = 20;
+
+                // Rect
+                draw
+                  .rect(size, size)
+                  .fill('#f06')
+                  .move(x, y);
+
+                // Circle
+                draw
+                  .circle(100)
+                  .fill('#f06')
+                  .move((x += space), y);
+
+                // Ellipse
+                draw
+                  .ellipse(size, size * 0.5)
+                  .fill('#f06')
+                  .move((x += space), y);
+
+                // Line
+                draw.line((x = 20), (y += space), x + size, y + size).stroke({
+                  color: '#f06',
+                  width: 10,
+                  linecap: 'round'
+                });
+
+                // Polyline
+                draw
+                  .polyline('50,0 60,40 100,50 60,60 50,100 40,60 0,50 40,40')
+                  .fill('none')
+                  .stroke({ color: '#f06', width: 4, linecap: 'round', linejoin: 'round' })
+                  .move((x += space), y);
+
+                // Polygon
+                draw
+                  .polygon('50,0 60,40 100,50 60,60 50,100 40,60 0,50 40,40')
+                  .fill('#f06')
+                  .move((x += space), y);
+
+                // Path
+                draw
+                  .path('M0 0 H50 A20 20 0 1 0 100 50 v25 C50 125 0 85 0 85 z')
+                  .fill('none')
+                  .stroke({ color: '#f06', width: 4, linecap: 'round', linejoin: 'round' })
+                  .move((x = 20), (y += space));
+
+                // Text
+                draw
+                  .text('Sample text.')
+                  .font({ fill: '#f06', family: "'Roboto', 'Noto', sans-serif" })
+                  .move((x += space), y);
+
+                // Image
+                draw
+                  .image('./svg-js-logo.png')
+                  .size(size, size)
+                  .move((x += space), y);
               });
             </script>
           </template>
         </demo-snippet>
       </vcf-anchor-nav-section>
 
-      <vcf-anchor-nav-section name="Example 3">
-        <h2 slot="header" class="hidden">Example 3</h2>
+      <vcf-anchor-nav-section name="Fills">
+        <h2 slot="header" class="hidden">Fills</h2>
         <demo-snippet>
           <template>
-            <vcf-svg></vcf-svg>
+            <vcf-svg id="fill-elements"></vcf-svg>
             <script>
               window.addEventListener('WebComponentsReady', () => {
-                // Example 3
+                const draw = document.querySelector('#fill-elements').draw.viewbox(0, 0, 260, 140);
+
+                // Gradient and Stop
+                const gradient = draw.gradient('linear', add => {
+                  add.stop(0, '#f06');
+                  add.stop(1, '#0f9');
+                });
+
+                draw
+                  .rect(100, 100)
+                  .move(20, 20)
+                  .radius(10)
+                  .fill(gradient);
+
+                // Pattern
+                const pattern = draw.pattern(20, 20, add => {
+                  add.rect(20, 20).fill('#f06');
+                  add.rect(10, 10).fill('#0f9');
+                  add
+                    .rect(10, 10)
+                    .move(10, 10)
+                    .fill('#fff');
+                });
+
+                draw
+                  .rect(100, 100)
+                  .move(140, 20)
+                  .radius(10)
+                  .fill(pattern);
+              });
+            </script>
+          </template>
+        </demo-snippet>
+      </vcf-anchor-nav-section>
+
+      <vcf-anchor-nav-section name="Clip and Mask">
+        <h2 slot="header" class="hidden">Clip and Mask</h2>
+        <demo-snippet>
+          <template>
+            <vcf-svg id="clip-mask"></vcf-svg>
+            <script>
+              window.addEventListener('WebComponentsReady', () => {
+                const draw = document.querySelector('#clip-mask').draw.viewbox(0, 0, 200, 100);
+                const circle = draw.circle(50).fill('#fff');
+
+                // Clip
+                const clipRect = draw.rect(100, 100).fill('#f06');
+                const clip = draw.clip();
+                clip.add(circle.center(15, 15));
+                clip.add(
+                  circle
+                    .clone()
+                    .center(50, 50)
+                    .size(70)
+                );
+                clip.add(
+                  circle
+                    .clone()
+                    .center(70, 10)
+                    .size(30)
+                );
+                clip.add(
+                  circle
+                    .clone()
+                    .center(80, 90)
+                    .size(50)
+                );
+                clipRect.clipWith(clip);
+
+                // Clip hover animation
+                clipRect.on('mouseover', () => {
+                  clipRect.animate(300, '<>').fill('#0f9');
+                });
+                clipRect.on('mouseout', () => {
+                  clipRect.animate(300, '<>').fill('#f06');
+                });
+
+                // Mask
+                const maskRect = draw
+                  .rect(100, 100)
+                  .move(100, 0)
+                  .fill('#f06');
+                const mask = draw.mask();
+                mask.add(circle.clone().center(115, 15));
+                mask.add(
+                  circle
+                    .clone()
+                    .center(150, 50)
+                    .size(70)
+                    .fill('#ccc')
+                );
+                mask.add(
+                  circle
+                    .clone()
+                    .center(170, 10)
+                    .size(30)
+                    .fill('#999')
+                );
+                mask.add(
+                  circle
+                    .clone()
+                    .center(180, 90)
+                    .size(50)
+                    .fill('#333')
+                );
+                maskRect.maskWith(mask);
+
+                // Mask hover animation
+                maskRect.on('mouseover', () => {
+                  maskRect.animate(300, '<>').fill('#0f9');
+                });
+                maskRect.on('mouseout', () => {
+                  maskRect.animate(300, '<>').fill('#f06');
+                });
               });
             </script>
           </template>
