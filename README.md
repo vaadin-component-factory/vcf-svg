@@ -4,6 +4,8 @@
 [![npm version](https://badgen.net/npm/v/@vaadin-component-factory/vcf-svg)](https://www.npmjs.com/package/@vaadin-component-factory/vcf-svg)
 [![Published on Vaadin Directory](https://img.shields.io/badge/Vaadin%20Directory-published-00b4f0.svg)](https://vaadin.com/directory/component/vaadin-component-factoryvcf-svg)
 
+Web component wrapper for [SVG.js](https://svgjs.com/docs/3.0).
+
 [Live demo ↗](https://vcf-svg.netlify.com)
 |
 [API documentation ↗](https://vcf-svg.netlify.com/api/#/elements/Vaadin.VcfSvg)

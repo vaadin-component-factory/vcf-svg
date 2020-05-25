@@ -55,6 +55,14 @@
     <script>
       window.addEventListener('WebComponentsReady', () => {
         document.querySelectorAll('.hidden').forEach(element => element.classList.remove('hidden'));
+        document.querySelector('vcf-anchor-nav').addEventListener('selected-changed', e => {
+          const timeline = document
+            .querySelector('vcf-svg')
+            .draw.findOne('textPath')
+            .timeline();
+          if (e.detail.index === 0) timeline.play();
+          else timeline.pause();
+        });
       });
     </script>
   </head>
@@ -72,15 +80,17 @@
         <a href="https://svgjs.com/docs/3.0/" title="Wrapper for SVG.js"><img src="svg-js-logo.png"/></a>
       </h1>
 
-      <vcf-anchor-nav-section name="Animated Text Path">
+      <vcf-anchor-nav-section id="animated-text-path-example" name="Animated Text Path">
         <h2 slot="header" class="hidden">Animated Text Path</h2>
         <demo-snippet>
           <template>
             <vaadin-text-field value="< v c f - s v g >"></vaadin-text-field>
-            <vcf-svg></vcf-svg>
+
+            <vcf-svg id="animated-text-path"></vcf-svg>
+
             <script>
               window.addEventListener('WebComponentsReady', () => {
-                const draw = document.querySelector('vcf-svg').draw.viewbox(0, 0, 300, 140);
+                const draw = document.querySelector('#animated-text-path').viewbox(0, 0, 300, 140);
                 const input = document.querySelector('vaadin-text-field');
                 const text = draw.text(add => add.tspan(input.value));
                 const updateText = textPath => () => textPath.tspan(input.value);
@@ -97,14 +107,80 @@
         </demo-snippet>
       </vcf-anchor-nav-section>
 
+      <vcf-anchor-nav-section name="Zoom and Pan">
+        <h2 slot="header" class="hidden">Zoom and Pan</h2>
+        <demo-snippet>
+          <template>
+            <vaadin-select id="element-list"></vaadin-select>
+            <vaadin-button id="focus-element">Focus Element</vaadin-button>
+
+            <vcf-svg id="zoom-pan" zoomable>
+              <svg slot="svg" viewBox="0 0 380 380">
+                <rect width="100" height="100" fill="#ff0066" x="20" y="20"></rect>
+                <circle r="50" cx="190" cy="70" fill="#ff0066"></circle>
+                <ellipse rx="50" ry="25" cx="310" cy="45" fill="#ff0066"></ellipse>
+                <line x1="20" y1="140" x2="120" y2="240" stroke-linecap="round" stroke-width="10" stroke="#ff0066"></line>
+                <polyline
+                  points="190,140 200,180 240,190 200,200 190,240 180,200 140,190 180,180"
+                  fill="none"
+                  stroke-linejoin="round"
+                  stroke-linecap="round"
+                  stroke-width="4"
+                  stroke="#ff0066"
+                ></polyline>
+                <polygon points="310,140 320,180 360,190 320,200 310,240 300,200 260,190 300,180" fill="#ff0066"></polygon>
+                <path
+                  d="M20 260H70A20 20 0 1 0 120 310V335C70 385 20 345 20 345Z "
+                  fill="none"
+                  stroke-linejoin="round"
+                  stroke-linecap="round"
+                  stroke-width="4"
+                  stroke="#ff0066"
+                ></path>
+                <text fill="#ff0066" font-family="'Roboto', 'Noto', sans-serif" x="140" y="254.5">
+                  <tspan dy="18.2" x="140">Sample text.</tspan>
+                </text>
+                <image width="100" height="100" xlink:href="./svg-js-logo.png" x="260" y="260"></image>
+              </svg>
+            </vcf-svg>
+
+            <script>
+              window.addEventListener('WebComponentsReady', () => {
+                const select = document.querySelector('#element-list');
+                const svg = document.querySelector('#zoom-pan');
+
+                // Element list
+                select.value = svg.draw.children()[0].node.tagName;
+                select.renderer = root => {
+                  if (root.firstChild) return;
+                  const listBox = document.createElement('vaadin-list-box');
+                  svg.draw.children().forEach(child => {
+                    const vaadinItem = document.createElement('vaadin-item');
+                    vaadinItem.textContent = child.node.tagName;
+                    listBox.appendChild(vaadinItem);
+                  });
+                  root.appendChild(listBox);
+                };
+
+                // Focus Element
+                document.querySelector('#focus-element').addEventListener('click', () => {
+                  if (select.value) svg.panTo(select.value);
+                });
+              });
+            </script>
+          </template>
+        </demo-snippet>
+      </vcf-anchor-nav-section>
+
       <vcf-anchor-nav-section name="Shapes and Paths">
         <h2 slot="header" class="hidden">Shapes and Paths</h2>
         <demo-snippet>
           <template>
-            <vcf-svg id="shapes"></vcf-svg>
+            <vcf-svg id="shapes"> </vcf-svg>
+
             <script>
               window.addEventListener('WebComponentsReady', () => {
-                const draw = document.querySelector('#shapes').draw.viewbox(0, 0, 380, 380);
+                const draw = document.querySelector('#shapes').viewbox(0, 0, 380, 380);
                 const size = 100;
                 const space = size + 20;
                 let x = 20;
