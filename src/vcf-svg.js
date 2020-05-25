@@ -36,25 +36,33 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
         :host {
           display: block;
           position: relative;
+          overflow: hidden;
         }
 
         :host([zoomable]:active) {
           cursor: grabbing;
         }
 
-        :host(:not([zoomable])) [part='toolbar'] {
+        :host(:not([zoomable])) #toolbar {
           display: none;
         }
 
-        [part='toolbar'] {
+        #toolbar {
           position: absolute;
           bottom: 0;
           display: flex;
           padding-right: var(--lumo-space-m);
           border-top-right-radius: var(--lumo-border-radius);
-          background-color: var(--lumo-tint-10pct);
           user-select: none;
           transition: all 0.2s;
+        }
+
+        #toolbar.zooming {
+          background-color: var(--lumo-tint-10pct);
+        }
+
+        #toolbar.zooming #zoom {
+          opacity: 0.6;
         }
 
         #resetZoom {
@@ -70,6 +78,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
           opacity: 0;
           margin-top: 2px;
           transition: opacity 0.2s;
+          white-space: nowrap;
         }
 
         #zoom span {
@@ -78,7 +87,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
         }
       </style>
       <slot id="svgSlot" name="svg"></slot>
-      <div part="toolbar">
+      <div id="toolbar" part="toolbar">
         <vaadin-button id="resetZoom" theme="tertiary icon" title="Reset Zoom">
           <iron-icon icon="vcf-svg:bullseye"></iron-icon>
         </vaadin-button>
@@ -118,7 +127,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
         value: SVG
       },
       /**
-       * Enable pan and zoom functionality
+       * Enable pan and zoom functionality.
        * @type {Boolean}
        */
       zoomable: {
@@ -127,18 +136,28 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
         value: false
       },
       /**
-       * Current zoom and pan information
+       * Current zoom and pan information.
        * @type {Object}
        */
       panZoomInfo: {
         type: Object,
         value: () => ({ scale: '100%', x: '0', y: '0' })
-      }
+      },
+      /**
+       * Width of SVG.
+       * @type {String}
+       */
+      width: String,
+      /**
+       * Height of SVG.
+       * @type {String}
+       */
+      height: String
     };
   }
 
   static get observers() {
-    return ['_zoomableChanged(zoomable, draw)', '_transformChanged(_transform, _transform.*)'];
+    return ['_zoomableChanged(zoomable, draw)', '_transformChanged(_transform, _transform.*)', '_dimensionsChanged(width, height)'];
   }
 
   ready() {
@@ -158,6 +177,11 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
 
   viewbox(...args) {
     if (this._svg) this._svg.viewbox(...args);
+    return this.draw;
+  }
+
+  size(...args) {
+    if (this._svg) this._svg.size(...args);
     return this.draw;
   }
 
@@ -267,13 +291,18 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   }
 
   _transformChanged(transform) {
-    this.$.zoom.style.opacity = 0.6;
+    this.$.toolbar.classList.add('zooming');
     this.panZoomInfo = {
       scale: `${Math.floor(transform.k * 100)}%`,
       x: `x: ${Math.floor(transform.x)}`,
       y: `y: ${Math.floor(transform.y)}`
     };
-    this.__debounce(() => (this.$.zoom.style.opacity = 0), 2000);
+    this.__debounce(() => this.$.toolbar.classList.remove('zooming'), 2000);
+  }
+
+  _dimensionsChanged(width, height) {
+    if (width) this._svg.css({ width });
+    if (height) this._svg.css({ height });
   }
 
   __debounce(fn, duration) {
