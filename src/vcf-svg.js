@@ -9,7 +9,7 @@
 import { html, PolymerElement } from '@polymer/polymer/polymer-element';
 import { ThemableMixin } from '@vaadin/vaadin-themable-mixin';
 import { ElementMixin } from '@vaadin/vaadin-element-mixin';
-import { SVG, Svg } from '@svgdotjs/svg.js';
+import * as SVG from '@svgdotjs/svg.js';
 import { zoom, zoomIdentity, select, event } from 'd3';
 import '@vaadin/vaadin-license-checker/vaadin-license-checker';
 import '@vaadin/vaadin-button';
@@ -105,7 +105,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   }
 
   static get version() {
-    return '0.1.3';
+    return '0.1.4';
   }
 
   static get properties() {
@@ -114,17 +114,17 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
        * Main SVG document.
        *
        * Refer to [SVG.js Docs](https://svgjs.com/docs/3.0) for more info.
-       * @type {Svg}
+       * @type {SVG.Svg}
        */
-      draw: Svg,
+      draw: SVG.Svg,
       /**
        * 1. [SVG() | Constructor](https://svgjs.com/docs/3.0/container-elements/#svg-constructor)
        * 1. [SVG() | Find](https://svgjs.com/docs/3.0/referencing-creating-elements/#svg)
-       * @type {SVG}
+       * @type {SVG.SVG}
        */
       SVG: {
         type: Object,
-        value: SVG
+        value: SVG.SVG
       },
       /**
        * Enable pan and zoom functionality.
@@ -165,7 +165,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
     this.$.resetZoom.addEventListener('click', () => this.resetZoom());
     this.$.svgSlot.addEventListener('slotchange', () => this._onSvgSlotChange());
     if (!this.$.svgSlot.assignedNodes().length) {
-      SVG()
+      SVG.SVG()
         .addTo(this)
         .attr({ slot: 'svg' });
     }
@@ -173,6 +173,11 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
 
   get children() {
     return this.draw.children();
+  }
+
+  addElement(element) {
+    const SVGElement = new SVG[element.elementName].attr(element);
+    this.draw.add(SVGElement);
   }
 
   viewbox(...args) {
@@ -278,7 +283,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   _onSvgSlotChange() {
     const slotted = this.$.svgSlot.assignedNodes().filter(node => node.tagName.toLowerCase() === 'svg');
     if (slotted.length) {
-      this._svg = SVG(slotted[0]).attr({});
+      this._svg = SVG.SVG(slotted[0]).attr({});
       this.set('draw', this._svg);
     }
   }
