@@ -2,7 +2,7 @@
   "name": "@vaadin-component-factory/vcf-svg",
   "version": "0.1.4",
   "description": "Web component for manipulating and animating SVG graphics.",
-  "main": "theme/lumo/vcf-svg.js",
+  "main": "src/vcf-svg.js",
   "author": "Vaadin Ltd",
   "license": "https://raw.githubusercontent.com/vaadin/vaadin-incubator-element/master/LICENSE",
   "repository": {
@@ -44,9 +44,9 @@
   "dependencies": {
     "@polymer/iron-icon": "^3.0.1",
     "@polymer/iron-iconset-svg": "^3.0.1",
-    "@polymer/polymer": "^3.0.0",
+    "@polymer/polymer": "3.2.0",
     "@svgdotjs/svg.js": "^3.0.16",
-    "@vaadin/vaadin-button": "^2.3.0",
+    "@vaadin/vaadin-button": "2.2.1",
     "@vaadin/vaadin-element-mixin": "^2.1.3",
     "@vaadin/vaadin-license-checker": "^2.1.2",
     "@vaadin/vaadin-lumo-styles": "^1.5.0",
