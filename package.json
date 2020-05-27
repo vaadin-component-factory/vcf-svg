@@ -1,6 +1,6 @@
 {
   "name": "@vaadin-component-factory/vcf-svg",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Web component for manipulating and animating SVG graphics.",
   "main": "src/vcf-svg.js",
   "author": "Vaadin Ltd",
