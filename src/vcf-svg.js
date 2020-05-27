@@ -172,10 +172,12 @@ class VcfSvg extends ElementMixin(PolymerElement) {
   }
 
   addElement(element, parentId) {
-    const parentElement = this.draw.findOne(parentId);
-    const parent = parentElement || this.draw;
-    const SVGElement = new SVG[element.elementName](element.attributes);
-    parent.add(SVGElement);
+    this.__debounce(() => {
+      const parentElement = this.draw.findOne(parentId);
+      const parent = parentElement || this.draw;
+      const SVGElement = new SVG[element.elementName](element.attributes);
+      parent.add(SVGElement);
+    });
   }
 
   viewbox(...args) {
