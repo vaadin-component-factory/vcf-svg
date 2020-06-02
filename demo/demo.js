@@ -7,5 +7,4 @@ import '@vaadin/vaadin-select';
 import '@vaadin/vaadin-lumo-styles/icons';
 import '@vaadin/vaadin-lumo-styles/typography';
 import '@vaadin-component-factory/vcf-anchor-nav';
-import '../theme/lumo/vcf-svg';
-// import { Rect, Circle } from '../src/vcf-svg';
+import '../src/vcf-svg';

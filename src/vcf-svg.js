@@ -8,11 +8,14 @@
 
 import { html, PolymerElement } from '@polymer/polymer/polymer-element';
 import { ElementMixin } from '@vaadin/vaadin-element-mixin';
-import * as SVG from '@svgdotjs/svg.js';
+// eslint-disable-next-line no-unused-vars
+import { SVG, Svg, List } from '@svgdotjs/svg.js';
 import { zoom, zoomIdentity, select, event } from 'd3';
 import '@vaadin/vaadin-license-checker/vaadin-license-checker';
 import '@vaadin/vaadin-button';
 import './vcf-svg-icons';
+
+const SVG_NOT_READY = 'Svg not ready. Try using the `svg-ready` event.';
 
 /**
  * `<vcf-svg>` is a Web component for manipulating and animating SVG graphics.
@@ -112,18 +115,20 @@ class VcfSvg extends ElementMixin(PolymerElement) {
        * Main SVG document.
        *
        * Refer to [SVG.js Docs](https://svgjs.com/docs/3.0) for more info.
-       * @type {SVG.Svg}
+       * @type {Svg}
        */
-      draw: SVG.Svg,
+      draw: Svg,
+
       /**
        * 1. [SVG() | Constructor](https://svgjs.com/docs/3.0/container-elements/#svg-constructor)
        * 1. [SVG() | Find](https://svgjs.com/docs/3.0/referencing-creating-elements/#svg)
-       * @type {SVG.SVG}
+       * @type {SVG}
        */
       SVG: {
         type: Object,
-        value: SVG.SVG,
+        value: SVG
       },
+
       /**
        * Enable pan and zoom functionality.
        * @type {Boolean}
@@ -131,26 +136,34 @@ class VcfSvg extends ElementMixin(PolymerElement) {
       zoomable: {
         type: Boolean,
         reflectToAttribute: true,
-        value: false,
+        value: false
       },
+
       /**
        * Current zoom and pan information.
        * @type {Object}
        */
       panZoomInfo: {
         type: Object,
-        value: () => ({ scale: '100%', x: '0', y: '0' }),
+        value: () => ({ scale: '100%', x: '0', y: '0' })
       },
+
       /**
        * Width of SVG.
        * @type {String}
        */
       width: String,
+
       /**
        * Height of SVG.
        * @type {String}
        */
       height: String,
+
+      _updateCache: {
+        type: Array,
+        value: () => []
+      }
     };
   }
 
@@ -158,6 +171,9 @@ class VcfSvg extends ElementMixin(PolymerElement) {
     return ['_zoomableChanged(zoomable, draw)', '_transformChanged(_transform, _transform.*)', '_dimensionsChanged(width, height)'];
   }
 
+  /**
+   * @returns {List}
+   */
   get children() {
     return this.draw.children();
   }
@@ -167,17 +183,47 @@ class VcfSvg extends ElementMixin(PolymerElement) {
     this.$.resetZoom.addEventListener('click', () => this.resetZoom());
     this.$.svgSlot.addEventListener('slotchange', () => this._onSvgSlotChange());
     if (!this.$.svgSlot.assignedNodes().length) {
-      SVG.SVG().addTo(this).attr({ slot: 'svg' });
+      SVG()
+        .addTo(this)
+        .attr({ slot: 'svg' });
     }
   }
 
-  addElement(element, parentId) {
-    this.__debounce(() => {
-      const parentElement = this.draw.findOne(parentId);
-      const parent = parentElement || this.draw;
-      const SVGElement = new SVG[element.elementName](element.attributes);
-      parent.add(SVGElement);
+  add(attributes, parentElementId) {
+    this._drawSafe(() => {
+      const parentElement = this._getParentElement(parentElementId);
+      this._createElement(attributes, parentElement);
     });
+  }
+
+  update(attributes) {
+    this._drawSafe(() => {
+      const element = this.findOneById(attributes.id);
+      this._executeElementUpdates(element, attributes.__updates);
+      element.attr(attributes);
+    });
+  }
+
+  find(selector, parentElementId) {
+    if (!this.draw) throw new Error(SVG_NOT_READY);
+    else {
+      const parentElement = this._getParentElement(parentElementId);
+      return parentElement.find(selector);
+    }
+  }
+
+  findOne(selector, parentElementId) {
+    if (!this.draw) throw new Error(SVG_NOT_READY);
+    else {
+      const parentElement = this._getParentElement(parentElementId);
+      const element = parentElement.findOne(selector);
+      if (element) return element;
+      else throw new Error(`Element with selector "${selector}" not found.`);
+    }
+  }
+
+  findOneById(id) {
+    return this.findOne(`[id="${id}"]`);
   }
 
   viewbox(...args) {
@@ -191,7 +237,10 @@ class VcfSvg extends ElementMixin(PolymerElement) {
   }
 
   resetZoom(duration = 1000) {
-    select(this._svg.node).transition().duration(duration).call(this._zoom.transform, zoomIdentity);
+    select(this._svg.node)
+      .transition()
+      .duration(duration)
+      .call(this._zoom.transform, zoomIdentity);
   }
 
   panTo(selector, scale = true, duration = 1000) {
@@ -211,8 +260,33 @@ class VcfSvg extends ElementMixin(PolymerElement) {
       const offsetTransformY = (transformY - this._transform.y) / this._transform.k;
       let transform = this._transform.translate(offsetTransformX, offsetTransformY);
       if (scale) transform = transform.scale(size);
-      d3Svg.transition().duration(duration).call(this._zoom.transform, transform);
+      d3Svg
+        .transition()
+        .duration(duration)
+        .call(this._zoom.transform, transform);
     }
+  }
+
+  _createElement(attributes, parentElement) {
+    if (attributes.__type) {
+      const elementConstructor = parentElement[attributes.__type];
+      if (elementConstructor) {
+        const args = attributes.__constructorArgs || [];
+        const element = elementConstructor.call(parentElement, ...args);
+        this._executeElementUpdates(element, attributes.__updates);
+        return element;
+      } else {
+        throw new Error(`\`${attributes.__type}\` constructor undefined.`);
+      }
+    } else {
+      throw new Error('`__type` undefined.');
+    }
+  }
+
+  _getParentElement(parentElementId) {
+    let parentElement = this.draw;
+    if (parentElementId) parentElement = this.findOneById(parentElementId);
+    return parentElement;
   }
 
   _convertCoords(element) {
@@ -226,7 +300,7 @@ class VcfSvg extends ElementMixin(PolymerElement) {
     const matrix = element.getScreenCTM();
     return {
       x: (matrix.a * x + matrix.c * y + matrix.e - offset.left) * widthFactor,
-      y: (matrix.b * x + matrix.d * y + matrix.f - offset.top) * heightFactor,
+      y: (matrix.b * x + matrix.d * y + matrix.f - offset.top) * heightFactor
     };
   }
 
@@ -259,13 +333,13 @@ class VcfSvg extends ElementMixin(PolymerElement) {
   _setZoomContainer(zoomable) {
     if (zoomable && !this.zoomContainer) {
       const zoomContainer = this.draw.group().attr({ id: 'zoomContainer', part: 'zoomContainer' });
-      this._svg.children().forEach((child) => {
+      this._svg.children().forEach(child => {
         if (child !== zoomContainer) zoomContainer.add(child);
       });
       this.zoomContainer = zoomContainer;
       this.set('draw', this.zoomContainer);
     } else if (!zoomable && this.zoomContainer) {
-      this.zoomContainer.children().forEach((child) => {
+      this.zoomContainer.children().forEach(child => {
         if (child !== this.zoomContainer) this._svg.add(child);
       });
       this.zoomContainer.remove();
@@ -275,10 +349,31 @@ class VcfSvg extends ElementMixin(PolymerElement) {
   }
 
   _onSvgSlotChange() {
-    const slotted = this.$.svgSlot.assignedNodes().filter((node) => node.tagName.toLowerCase() === 'svg');
+    const slotted = this.$.svgSlot.assignedNodes().filter(node => node.tagName.toLowerCase() === 'svg');
     if (slotted.length) {
-      this._svg = SVG.SVG(slotted[0]).attr({});
+      this._svg = SVG(slotted[0]).attr({});
       this.set('draw', this._svg);
+      this._executeUpdates();
+      this.dispatchEvent(new CustomEvent('svg-ready'), { detail: this.draw });
+    }
+  }
+
+  _drawSafe(callback) {
+    if (!this._draw) this._updateCache.push(callback);
+    else callback();
+  }
+
+  _executeUpdates() {
+    while (this._updateCache.length) this._updateCache.shift()();
+  }
+
+  _executeElementUpdates(element, updates) {
+    if (element && updates) {
+      element.node.removeAttribute('__updates');
+      while (updates.length) {
+        const update = updates.shift();
+        element[update.function](...update.args);
+      }
     }
   }
 
@@ -294,7 +389,7 @@ class VcfSvg extends ElementMixin(PolymerElement) {
     this.panZoomInfo = {
       scale: `${Math.floor(transform.k * 100)}%`,
       x: `x: ${Math.floor(transform.x)}`,
-      y: `y: ${Math.floor(transform.y)}`,
+      y: `y: ${Math.floor(transform.y)}`
     };
     this.__debounce(() => this.$.toolbar.classList.remove('zooming'), 2000);
   }
@@ -317,20 +412,26 @@ class VcfSvg extends ElementMixin(PolymerElement) {
 
   __getTimeout(id) {
     this.__timeouts = this.__timeouts || [];
-    return this.__timeouts.filter((timeout) => timeout && timeout.id === id)[0];
+    return this.__timeouts.filter(timeout => timeout && timeout.id === id)[0];
   }
 
   /**
    * @protected
    */
-  static _finalizeClass() {
-    super._finalizeClass();
-    const devModeCallback = window.Vaadin.developmentModeCallback;
-    const licenseChecker = devModeCallback && devModeCallback['vaadin-license-checker'];
-    if (typeof licenseChecker === 'function') {
-      licenseChecker(VcfSvg);
-    }
-  }
+  // static _finalizeClass() {
+  //   super._finalizeClass();
+  //   const devModeCallback = window.Vaadin.developmentModeCallback;
+  //   const licenseChecker = devModeCallback && devModeCallback['vaadin-license-checker'];
+  //   if (typeof licenseChecker === 'function') {
+  //     licenseChecker(VcfSvg);
+  //   }
+  // }
+
+  /**
+   * Fired when the methods for the SVG in the `svg` slot can be used.
+   *
+   * @event svg-ready
+   */
 }
 
 export * from '@svgdotjs/svg.js';
