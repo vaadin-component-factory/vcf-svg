@@ -55,14 +55,6 @@
     <script>
       window.addEventListener('WebComponentsReady', () => {
         document.querySelectorAll('.hidden').forEach(element => element.classList.remove('hidden'));
-        document.querySelector('vcf-anchor-nav').addEventListener('selected-changed', e => {
-          const timeline = document
-            .querySelector('vcf-svg')
-            .draw.findOne('textPath')
-            .timeline();
-          if (e.detail.index === 0) timeline.play();
-          else timeline.pause();
-        });
       });
     </script>
   </head>
@@ -79,98 +71,6 @@
         <code>&lt;vcf-svg&gt;</code>
         <a href="https://svgjs.com/docs/3.0/" title="Wrapper for SVG.js"><img src="svg-js-logo.png"/></a>
       </h1>
-
-      <vcf-anchor-nav-section id="animated-text-path-example" name="Animated Text Path">
-        <h2 slot="header" class="hidden">Animated Text Path</h2>
-        <demo-snippet>
-          <template>
-            <vaadin-text-field value="< v c f - s v g >"></vaadin-text-field>
-
-            <vcf-svg id="animated-text-path"></vcf-svg>
-
-            <script>
-              window.addEventListener('WebComponentsReady', () => {
-                const draw = document.querySelector('#animated-text-path').viewbox(0, 0, 300, 140);
-                const input = document.querySelector('vaadin-text-field');
-                const text = draw.text(add => add.tspan(input.value));
-                const updateText = textPath => () => textPath.tspan(input.value);
-                const textPath = text.path('M10 80 C 40 10, 65 10, 95 80 S 150 150, 180 80');
-                textPath
-                  .animate(1000)
-                  .ease('<>')
-                  .plot('M10 80 C 40 150, 65 150, 95 80 S 150 10, 180 80')
-                  .loop(true, true);
-                input.addEventListener('input', updateText(textPath));
-              });
-            </script>
-          </template>
-        </demo-snippet>
-      </vcf-anchor-nav-section>
-
-      <vcf-anchor-nav-section name="Zoom and Pan">
-        <h2 slot="header" class="hidden">Zoom and Pan</h2>
-        <demo-snippet>
-          <template>
-            <vaadin-select id="element-list"></vaadin-select>
-            <vaadin-button id="focus-element">Focus Element</vaadin-button>
-
-            <vcf-svg id="zoom-pan" zoomable>
-              <svg slot="svg" viewBox="0 0 380 380" height="70vh">
-                <rect width="100" height="100" fill="#ff0066" x="20" y="20"></rect>
-                <circle r="50" cx="190" cy="70" fill="#ff0066"></circle>
-                <ellipse rx="50" ry="25" cx="310" cy="45" fill="#ff0066"></ellipse>
-                <line x1="20" y1="140" x2="120" y2="240" stroke-linecap="round" stroke-width="10" stroke="#ff0066"></line>
-                <polyline
-                  points="190,140 200,180 240,190 200,200 190,240 180,200 140,190 180,180"
-                  fill="none"
-                  stroke-linejoin="round"
-                  stroke-linecap="round"
-                  stroke-width="4"
-                  stroke="#ff0066"
-                ></polyline>
-                <polygon points="310,140 320,180 360,190 320,200 310,240 300,200 260,190 300,180" fill="#ff0066"></polygon>
-                <path
-                  d="M20 260H70A20 20 0 1 0 120 310V335C70 385 20 345 20 345Z "
-                  fill="none"
-                  stroke-linejoin="round"
-                  stroke-linecap="round"
-                  stroke-width="4"
-                  stroke="#ff0066"
-                ></path>
-                <text fill="#ff0066" font-family="'Roboto', 'Noto', sans-serif" x="140" y="254.5">
-                  <tspan dy="18.2" x="140">Sample text.</tspan>
-                </text>
-                <image width="100" height="100" xlink:href="./svg-js-logo.png" x="260" y="260"></image>
-              </svg>
-            </vcf-svg>
-
-            <script>
-              window.addEventListener('WebComponentsReady', () => {
-                const select = document.querySelector('#element-list');
-                const svg = document.querySelector('#zoom-pan');
-
-                // Element list
-                select.value = svg.draw.children()[0].node.tagName;
-                select.renderer = root => {
-                  if (root.firstChild) return;
-                  const listBox = document.createElement('vaadin-list-box');
-                  svg.draw.children().forEach(child => {
-                    const vaadinItem = document.createElement('vaadin-item');
-                    vaadinItem.textContent = child.node.tagName;
-                    listBox.appendChild(vaadinItem);
-                  });
-                  root.appendChild(listBox);
-                };
-
-                // Focus Element
-                document.querySelector('#focus-element').addEventListener('click', () => {
-                  if (select.value) svg.panTo(select.value);
-                });
-              });
-            </script>
-          </template>
-        </demo-snippet>
-      </vcf-anchor-nav-section>
 
       <vcf-anchor-nav-section name="Shapes and Paths">
         <h2 slot="header" class="hidden">Shapes and Paths</h2>
@@ -251,126 +151,90 @@
         </demo-snippet>
       </vcf-anchor-nav-section>
 
-      <vcf-anchor-nav-section name="Fills">
-        <h2 slot="header" class="hidden">Fills</h2>
+      <vcf-anchor-nav-section name="Zoom and Pan">
+        <h2 slot="header" class="hidden">Zoom and Pan</h2>
         <demo-snippet>
           <template>
-            <vcf-svg id="fill-elements"></vcf-svg>
+            <vaadin-select id="element-list"></vaadin-select>
+            <vaadin-button id="focus-element">Focus Element</vaadin-button>
+
+            <vcf-svg id="zoom-pan" zoomable>
+              <svg slot="svg" viewBox="0 0 380 380" height="70vh">
+                <rect width="100" height="100" fill="#ff0066" x="20" y="20"></rect>
+                <circle r="50" cx="190" cy="70" fill="#ff0066"></circle>
+                <ellipse rx="50" ry="25" cx="310" cy="45" fill="#ff0066"></ellipse>
+                <line x1="20" y1="140" x2="120" y2="240" stroke-linecap="round" stroke-width="10" stroke="#ff0066"></line>
+                <polyline
+                  points="190,140 200,180 240,190 200,200 190,240 180,200 140,190 180,180"
+                  fill="none"
+                  stroke-linejoin="round"
+                  stroke-linecap="round"
+                  stroke-width="4"
+                  stroke="#ff0066"
+                ></polyline>
+                <polygon points="310,140 320,180 360,190 320,200 310,240 300,200 260,190 300,180" fill="#ff0066"></polygon>
+                <path
+                  d="M20 260H70A20 20 0 1 0 120 310V335C70 385 20 345 20 345Z "
+                  fill="none"
+                  stroke-linejoin="round"
+                  stroke-linecap="round"
+                  stroke-width="4"
+                  stroke="#ff0066"
+                ></path>
+                <text fill="#ff0066" font-family="'Roboto', 'Noto', sans-serif" x="140" y="254.5">
+                  <tspan dy="18.2" x="140">Sample text.</tspan>
+                </text>
+                <image width="100" height="100" xlink:href="./svg-js-logo.png" x="260" y="260"></image>
+              </svg>
+            </vcf-svg>
+
             <script>
               window.addEventListener('WebComponentsReady', () => {
-                const draw = document.querySelector('#fill-elements').draw.viewbox(0, 0, 260, 140);
+                const select = document.querySelector('#element-list');
+                const svg = document.querySelector('#zoom-pan');
 
-                // Gradient and Stop
-                const gradient = draw.gradient('linear', add => {
-                  add.stop(0, '#f06');
-                  add.stop(1, '#0f9');
+                // Element list
+                select.value = svg.draw.children()[0].node.tagName;
+                select.renderer = root => {
+                  if (root.firstChild) return;
+                  const listBox = document.createElement('vaadin-list-box');
+                  svg.draw.children().forEach(child => {
+                    const vaadinItem = document.createElement('vaadin-item');
+                    vaadinItem.textContent = child.node.tagName;
+                    listBox.appendChild(vaadinItem);
+                  });
+                  root.appendChild(listBox);
+                };
+
+                // Focus Element
+                document.querySelector('#focus-element').addEventListener('click', () => {
+                  if (select.value) svg.panTo(select.value);
                 });
-
-                draw
-                  .rect(100, 100)
-                  .move(20, 20)
-                  .radius(10)
-                  .fill(gradient);
-
-                // Pattern
-                const pattern = draw.pattern(20, 20, add => {
-                  add.rect(20, 20).fill('#f06');
-                  add.rect(10, 10).fill('#0f9');
-                  add
-                    .rect(10, 10)
-                    .move(10, 10)
-                    .fill('#fff');
-                });
-
-                draw
-                  .rect(100, 100)
-                  .move(140, 20)
-                  .radius(10)
-                  .fill(pattern);
               });
             </script>
           </template>
         </demo-snippet>
       </vcf-anchor-nav-section>
 
-      <vcf-anchor-nav-section name="Clip and Mask">
-        <h2 slot="header" class="hidden">Clip and Mask</h2>
+      <vcf-anchor-nav-section id="draggable-example" name="Draggable">
+        <h2 slot="header" class="hidden">Draggable</h2>
         <demo-snippet>
           <template>
-            <vcf-svg id="clip-mask"></vcf-svg>
+            <vaadin-button id="reset-draggable">Reset Draggable</vaadin-button>
+            <vcf-svg id="draggable"></vcf-svg>
+
             <script>
               window.addEventListener('WebComponentsReady', () => {
-                const draw = document.querySelector('#clip-mask').draw.viewbox(0, 0, 200, 100);
-                const circle = draw.circle(50).fill('#fff');
-
-                // Clip
-                const clipRect = draw.rect(100, 100).fill('#f06');
-                const clip = draw.clip();
-                clip.add(circle.center(15, 15));
-                clip.add(
-                  circle
-                    .clone()
-                    .center(50, 50)
-                    .size(70)
-                );
-                clip.add(
-                  circle
-                    .clone()
-                    .center(70, 10)
-                    .size(30)
-                );
-                clip.add(
-                  circle
-                    .clone()
-                    .center(80, 90)
-                    .size(50)
-                );
-                clipRect.clipWith(clip);
-
-                // Clip hover animation
-                clipRect.on('mouseover', () => {
-                  clipRect.animate(300, '<>').fill('#0f9');
+                const svg = document.querySelector('#draggable');
+                const rect = svg.draw.rect(100, 100);
+                const button = document.querySelector('#reset-draggable');
+                svg.viewbox(0, 0, 300, 150);
+                svg.draggable(rect, true);
+                svg.addEventListener('dragend', e => {
+                  svg.draggable(rect, false);
                 });
-                clipRect.on('mouseout', () => {
-                  clipRect.animate(300, '<>').fill('#f06');
-                });
-
-                // Mask
-                const maskRect = draw
-                  .rect(100, 100)
-                  .move(100, 0)
-                  .fill('#f06');
-                const mask = draw.mask();
-                mask.add(circle.clone().center(115, 15));
-                mask.add(
-                  circle
-                    .clone()
-                    .center(150, 50)
-                    .size(70)
-                    .fill('#ccc')
-                );
-                mask.add(
-                  circle
-                    .clone()
-                    .center(170, 10)
-                    .size(30)
-                    .fill('#999')
-                );
-                mask.add(
-                  circle
-                    .clone()
-                    .center(180, 90)
-                    .size(50)
-                    .fill('#333')
-                );
-                maskRect.maskWith(mask);
-
-                // Mask hover animation
-                maskRect.on('mouseover', () => {
-                  maskRect.animate(300, '<>').fill('#0f9');
-                });
-                maskRect.on('mouseout', () => {
-                  maskRect.animate(300, '<>').fill('#f06');
+                button.addEventListener('click', e => {
+                  svg.draggable(rect, true);
                 });
               });
             </script>

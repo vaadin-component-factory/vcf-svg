@@ -7,10 +7,12 @@
  */
 
 import { html, PolymerElement } from '@polymer/polymer/polymer-element';
+import { ThemableMixin } from '@vaadin/vaadin-themable-mixin';
 import { ElementMixin } from '@vaadin/vaadin-element-mixin';
 // eslint-disable-next-line no-unused-vars
 import { SVG, Svg, List } from '@svgdotjs/svg.js';
 import { zoom, zoomIdentity, select, event } from 'd3';
+import '../lib/svg.draggable';
 import '@vaadin/vaadin-license-checker/vaadin-license-checker';
 import '@vaadin/vaadin-button';
 import './vcf-svg-icons';
@@ -28,9 +30,10 @@ const SVG_NOT_READY = 'Svg not ready. Try using the `svg-ready` event.';
  *
  * @memberof Vaadin
  * @mixes ElementMixin
+ * @mixes ThemableMixin
  * @demo demo/index.html
  */
-class VcfSvg extends ElementMixin(PolymerElement) {
+class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   static get template() {
     return html`
       <style>
@@ -126,7 +129,7 @@ class VcfSvg extends ElementMixin(PolymerElement) {
        */
       SVG: {
         type: Object,
-        value: SVG
+        value: () => SVG
       },
 
       /**
@@ -183,7 +186,7 @@ class VcfSvg extends ElementMixin(PolymerElement) {
     this.$.resetZoom.addEventListener('click', () => this.resetZoom());
     this.$.svgSlot.addEventListener('slotchange', () => this._onSvgSlotChange());
     if (!this.$.svgSlot.assignedNodes().length) {
-      SVG()
+      this.SVG()
         .addTo(this)
         .attr({ slot: 'svg' });
     }
@@ -199,7 +202,7 @@ class VcfSvg extends ElementMixin(PolymerElement) {
   update(attributes) {
     this._drawSafe(() => {
       const element = this.findOneById(attributes.id);
-      this._executeElementUpdates(element, attributes.__updates);
+      this._executeServerUpdates(element, attributes.__updates);
       element.attr(attributes);
     });
   }
@@ -267,19 +270,49 @@ class VcfSvg extends ElementMixin(PolymerElement) {
     }
   }
 
+  draggable(element, draggable) {
+    const dragEvents = ['beforedrag', 'dragstart', 'dragmove', 'dragend'];
+    element.draggable(draggable);
+    if (draggable) {
+      element.addClass('draggable');
+      this._addElementEvents(element, dragEvents);
+    } else {
+      element.removeClass('draggable');
+      this._removeElementEvents(element, dragEvents);
+    }
+  }
+
+  _addElementEvents(element, events) {
+    events.forEach(eventName => {
+      element.listeners = element.listeners || {};
+      element.listeners[eventName] = e => this.dispatchEvent(new CustomEvent(eventName, { detail: e.detail }));
+      element.node.addEventListener(eventName, element.listeners[eventName]);
+    });
+  }
+
+  _removeElementEvents(element, events) {
+    events = events || Object.keys(element.listeners || {});
+    Object.keys(element.listeners).forEach(eventName => {
+      if (events.includes(eventName)) {
+        element.node.removeEventListener(eventName, element.listeners[eventName]);
+        delete element.listeners[eventName];
+      }
+    });
+  }
+
   _createElement(attributes, parentElement) {
-    if (attributes.__type) {
-      const elementConstructor = parentElement[attributes.__type];
+    if (attributes.__constructor) {
+      const elementConstructor = parentElement[attributes.__constructor];
       if (elementConstructor) {
         const args = attributes.__constructorArgs || [];
         const element = elementConstructor.call(parentElement, ...args);
-        this._executeElementUpdates(element, attributes.__updates);
+        this._executeServerUpdates(element, attributes.__updates);
         return element;
       } else {
-        throw new Error(`\`${attributes.__type}\` constructor undefined.`);
+        throw new Error(`\`${attributes.__constructor}\` constructor undefined.`);
       }
     } else {
-      throw new Error('`__type` undefined.');
+      throw new Error('`__constructor` undefined.');
     }
   }
 
@@ -351,7 +384,7 @@ class VcfSvg extends ElementMixin(PolymerElement) {
   _onSvgSlotChange() {
     const slotted = this.$.svgSlot.assignedNodes().filter(node => node.tagName.toLowerCase() === 'svg');
     if (slotted.length) {
-      this._svg = SVG(slotted[0]).attr({});
+      this._svg = this.SVG(slotted[0]).attr({});
       this.set('draw', this._svg);
       this._executeUpdates();
       this.dispatchEvent(new CustomEvent('svg-ready'), { detail: this.draw });
@@ -367,7 +400,7 @@ class VcfSvg extends ElementMixin(PolymerElement) {
     while (this._updateCache.length) this._updateCache.shift()();
   }
 
-  _executeElementUpdates(element, updates) {
+  _executeServerUpdates(element, updates) {
     if (element && updates) {
       element.node.removeAttribute('__updates');
       while (updates.length) {
