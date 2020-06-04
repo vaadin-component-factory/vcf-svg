@@ -306,7 +306,10 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
       if (elementConstructor) {
         const args = attributes.__constructorArgs || [];
         const element = elementConstructor.call(parentElement, ...args);
-        this._executeServerUpdates(element, attributes.__updates);
+        const updates = attributes.__updates;
+        this._removePrivateAttributes(attributes);
+        element.attr(attributes);
+        this._executeServerUpdates(element, updates);
         return element;
       } else {
         throw new Error(`\`${attributes.__constructor}\` constructor undefined.`);
@@ -314,6 +317,10 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
     } else {
       throw new Error('`__constructor` undefined.');
     }
+  }
+
+  _removePrivateAttributes(attributes) {
+    Object.keys(attributes).forEach(key => key.includes('__') && delete attributes[key]);
   }
 
   _getParentElement(parentElementId) {
@@ -402,7 +409,6 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
 
   _executeServerUpdates(element, updates) {
     if (element && updates) {
-      element.node.removeAttribute('__updates');
       while (updates.length) {
         const update = updates.shift();
         element[update.function](...update.args);
@@ -451,14 +457,14 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   /**
    * @protected
    */
-  // static _finalizeClass() {
-  //   super._finalizeClass();
-  //   const devModeCallback = window.Vaadin.developmentModeCallback;
-  //   const licenseChecker = devModeCallback && devModeCallback['vaadin-license-checker'];
-  //   if (typeof licenseChecker === 'function') {
-  //     licenseChecker(VcfSvg);
-  //   }
-  // }
+  static _finalizeClass() {
+    super._finalizeClass();
+    const devModeCallback = window.Vaadin.developmentModeCallback;
+    const licenseChecker = devModeCallback && devModeCallback['vaadin-license-checker'];
+    if (typeof licenseChecker === 'function') {
+      licenseChecker(VcfSvg);
+    }
+  }
 
   /**
    * Fired when the methods for the SVG in the `svg` slot can be used.

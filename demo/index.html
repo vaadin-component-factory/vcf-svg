@@ -220,6 +220,15 @@
         <h2 slot="header" class="hidden">Draggable</h2>
         <demo-snippet>
           <template>
+            <style>
+              .draggable:hover {
+                cursor: grab;
+              }
+              .draggable:active {
+                cursor: grabbing;
+              }
+            </style>
+
             <vaadin-button id="reset-draggable">Reset Draggable</vaadin-button>
             <vcf-svg id="draggable"></vcf-svg>
 
