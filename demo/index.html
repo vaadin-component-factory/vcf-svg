@@ -221,27 +221,34 @@
         <demo-snippet>
           <template>
             <style>
-              .draggable:hover {
+              rect.draggable {
+                fill: var(--lumo-primary-color);
+                transition: fill 0.2s;
+              }
+              rect.draggable:hover {
                 cursor: grab;
               }
-              .draggable:active {
+              rect.draggable:active {
                 cursor: grabbing;
               }
             </style>
 
-            <vaadin-button id="reset-draggable">Reset Draggable</vaadin-button>
+            <vaadin-button id="set-draggable">Set Draggable</vaadin-button>
             <vcf-svg id="draggable"></vcf-svg>
 
             <script>
               window.addEventListener('WebComponentsReady', () => {
                 const svg = document.querySelector('#draggable');
                 const rect = svg.draw.rect(100, 100);
-                const button = document.querySelector('#reset-draggable');
+                const button = document.querySelector('#set-draggable');
                 svg.viewbox(0, 0, 300, 150);
-                svg.draggable(rect, true);
+
+                // Remove draggable on dragend
                 svg.addEventListener('dragend', e => {
                   svg.draggable(rect, false);
                 });
+
+                // Reset draggable
                 button.addEventListener('click', e => {
                   svg.draggable(rect, true);
                 });

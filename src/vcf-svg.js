@@ -202,8 +202,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   update(attributes) {
     this._drawSafe(() => {
       const element = this.findOneById(attributes.id);
-      this._executeServerUpdates(element, attributes.__updates);
-      element.attr(attributes);
+      this._executeServerUpdates(element, attributes);
     });
   }
 
@@ -306,10 +305,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
       if (elementConstructor) {
         const args = attributes.__constructorArgs || [];
         const element = elementConstructor.call(parentElement, ...args);
-        const updates = attributes.__updates;
-        this._removePrivateAttributes(attributes);
-        element.attr(attributes);
-        this._executeServerUpdates(element, updates);
+        this._executeServerUpdates(element, attributes);
         return element;
       } else {
         throw new Error(`\`${attributes.__constructor}\` constructor undefined.`);
@@ -407,8 +403,11 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
     while (this._updateCache.length) this._updateCache.shift()();
   }
 
-  _executeServerUpdates(element, updates) {
-    if (element && updates) {
+  _executeServerUpdates(element, attributes) {
+    if (element && attributes) {
+      const updates = attributes.__updates;
+      this._removePrivateAttributes(attributes);
+      element.attr(attributes);
       while (updates.length) {
         const update = updates.shift();
         element[update.function](...update.args);
