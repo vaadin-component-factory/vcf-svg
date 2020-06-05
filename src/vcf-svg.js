@@ -290,13 +290,16 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   }
 
   _removeElementEvents(element, events) {
-    events = events || Object.keys(element.listeners || {});
-    Object.keys(element.listeners).forEach(eventName => {
-      if (events.includes(eventName)) {
-        element.node.removeEventListener(eventName, element.listeners[eventName]);
-        delete element.listeners[eventName];
-      }
-    });
+    const listeners = element.listeners;
+    if (listeners) {
+      events = events || Object.keys(listeners);
+      Object.keys(listeners).forEach(eventName => {
+        if (events.includes(eventName)) {
+          element.node.removeEventListener(eventName, element.listeners[eventName]);
+          delete element.listeners[eventName];
+        }
+      });
+    }
   }
 
   _createElement(attributes, parentElement) {
@@ -412,6 +415,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
         const update = updates.shift();
         element[update.function](...update.args);
       }
+      this.draggable(element, attributes.draggable);
     }
   }
 
