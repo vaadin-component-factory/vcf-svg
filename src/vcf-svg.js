@@ -398,7 +398,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   }
 
   _drawSafe(callback) {
-    if (!this._draw) this._updateCache.push(callback);
+    if (!this.draw) this._updateCache.push(callback);
     else callback();
   }
 
@@ -409,13 +409,20 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   _executeServerUpdates(element, attributes) {
     if (element && attributes) {
       const updates = attributes.__updates;
+      const elements = attributes.__elements;
+      if (elements) {
+        elements.forEach(id => {
+          const el = this.findOneById(id);
+          if (el) element.add(el);
+        });
+      }
       this._removePrivateAttributes(attributes);
       element.attr(attributes);
       while (updates.length) {
         const update = updates.shift();
         element[update.function](...update.args);
       }
-      this.draggable(element, attributes.draggable);
+      this.draggable(element, Boolean(element.attr('draggable')));
     }
   }
 
