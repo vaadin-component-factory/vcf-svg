@@ -51,6 +51,11 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
           display: none;
         }
 
+        ::slotted(svg) {
+          width: 100%;
+          height: 100%;
+        }
+
         #toolbar {
           position: absolute;
           bottom: 0;
@@ -90,7 +95,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
           margin-left: var(--lumo-space-m);
         }
       </style>
-      <slot id="svgSlot" name="svg"></slot>
+      <slot id="svgSlot" name="svg" on-slotchange="_onSvgSlotChange"></slot>
       <div id="toolbar" part="toolbar">
         <vaadin-button id="resetZoom" theme="tertiary icon" title="Reset Zoom">
           <iron-icon icon="vcf-svg:bullseye"></iron-icon>
@@ -161,12 +166,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
        * Height of SVG.
        * @type {String}
        */
-      height: String,
-
-      _updateCache: {
-        type: Array,
-        value: () => []
-      }
+      height: String
     };
   }
 
@@ -184,7 +184,6 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   ready() {
     super.ready();
     this.$.resetZoom.addEventListener('click', () => this.resetZoom());
-    this.$.svgSlot.addEventListener('slotchange', () => this._onSvgSlotChange());
     if (!this.$.svgSlot.assignedNodes().length) {
       this.SVG()
         .addTo(this)
@@ -318,10 +317,6 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
     }
   }
 
-  _removePrivateAttributes(attributes) {
-    Object.keys(attributes).forEach(key => key.includes('__') && delete attributes[key]);
-  }
-
   _getParentElement(parentElementId) {
     let parentElement = this.draw;
     if (parentElementId) parentElement = this.findOneById(parentElementId);
@@ -390,7 +385,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   _onSvgSlotChange() {
     const slotted = this.$.svgSlot.assignedNodes().filter(node => node.tagName.toLowerCase() === 'svg');
     if (slotted.length) {
-      this._svg = this.SVG(slotted[0]).attr({});
+      this._svg = this.SVG(slotted[0]);
       this.set('draw', this._svg);
       this._executeUpdates();
       this.dispatchEvent(new CustomEvent('svg-ready'), { detail: this.draw });
@@ -398,12 +393,13 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   }
 
   _drawSafe(callback) {
-    if (!this.draw) this._updateCache.push(callback);
+    this._updates = this._updates || [];
+    if (!this.draw) this._updates.push(callback);
     else callback();
   }
 
   _executeUpdates() {
-    while (this._updateCache.length) this._updateCache.shift()();
+    while (this._updates && this._updates.length) this._updates.shift()();
   }
 
   _executeServerUpdates(element, attributes) {
@@ -424,6 +420,10 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
       }
       this.draggable(element, Boolean(element.attr('draggable')));
     }
+  }
+
+  _removePrivateAttributes(attributes) {
+    Object.keys(attributes).forEach(key => key.includes('__') && delete attributes[key]);
   }
 
   _zoomableChanged(zoomable, draw) {
@@ -467,14 +467,14 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   /**
    * @protected
    */
-  static _finalizeClass() {
-    super._finalizeClass();
-    const devModeCallback = window.Vaadin.developmentModeCallback;
-    const licenseChecker = devModeCallback && devModeCallback['vaadin-license-checker'];
-    if (typeof licenseChecker === 'function') {
-      licenseChecker(VcfSvg);
-    }
-  }
+  // static _finalizeClass() {
+  //   super._finalizeClass();
+  //   const devModeCallback = window.Vaadin.developmentModeCallback;
+  //   const licenseChecker = devModeCallback && devModeCallback['vaadin-license-checker'];
+  //   if (typeof licenseChecker === 'function') {
+  //     licenseChecker(VcfSvg);
+  //   }
+  // }
 
   /**
    * Fired when the methods for the SVG in the `svg` slot can be used.
