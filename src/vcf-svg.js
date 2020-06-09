@@ -451,8 +451,10 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   }
 
   _dimensionsChanged(width, height) {
-    if (width) this._svg.css({ width });
-    if (height) this._svg.css({ height });
+    this._drawSafe(() => {
+      if (width) this._svg.css({ width });
+      if (height) this._svg.css({ height });
+    });
   }
 
   __debounce(fn, duration) {
