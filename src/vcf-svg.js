@@ -418,7 +418,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
         const update = updates.shift();
         element[update.function](...update.args);
       }
-      this.draggable(element, Boolean(element.attr('draggable')));
+      this.draggable(element, element.attr('draggable') === 'true');
     }
   }
 
