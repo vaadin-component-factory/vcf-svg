@@ -198,6 +198,13 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
     });
   }
 
+  remove(elementId) {
+    this._drawSafe(() => {
+      const element = this.findOneById(elementId);
+      element.remove();
+    });
+  }
+
   update(attributes) {
     this._drawSafe(() => {
       const element = this.findOneById(attributes.id);
@@ -467,19 +474,40 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   /**
    * @protected
    */
-  // static _finalizeClass() {
-  //   super._finalizeClass();
-  //   const devModeCallback = window.Vaadin.developmentModeCallback;
-  //   const licenseChecker = devModeCallback && devModeCallback['vaadin-license-checker'];
-  //   if (typeof licenseChecker === 'function') {
-  //     licenseChecker(VcfSvg);
-  //   }
-  // }
+  static _finalizeClass() {
+    super._finalizeClass();
+    const devModeCallback = window.Vaadin.developmentModeCallback;
+    const licenseChecker = devModeCallback && devModeCallback['vaadin-license-checker'];
+    if (typeof licenseChecker === 'function') {
+      licenseChecker(VcfSvg);
+    }
+  }
 
   /**
    * Fired when the methods for the SVG in the `svg` slot can be used.
    *
    * @event svg-ready
+   */
+
+  /**
+   * Fired before `dragstart` (cancelable).
+   *
+   * @event beforedrag
+   */
+  /**
+   * Fired before `dragmove`.
+   *
+   * @event dragstart
+   */
+  /**
+   * Fired while dragging (cancelable).
+   *
+   * @event dragmove
+   */
+  /**
+   * Fired after `dragmove`.
+   *
+   * @event dragend
    */
 }
 
