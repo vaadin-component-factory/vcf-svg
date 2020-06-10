@@ -10,7 +10,7 @@ import { html, PolymerElement } from '@polymer/polymer/polymer-element';
 import { ThemableMixin } from '@vaadin/vaadin-themable-mixin';
 import { ElementMixin } from '@vaadin/vaadin-element-mixin';
 // eslint-disable-next-line no-unused-vars
-import { SVG, Svg, List } from '@svgdotjs/svg.js';
+import { SVG, Svg, List, Element } from '@svgdotjs/svg.js';
 import { zoom, zoomIdentity, select, event } from 'd3';
 import '../lib/svg.draggable';
 import '@vaadin/vaadin-license-checker/vaadin-license-checker';
@@ -18,6 +18,7 @@ import '@vaadin/vaadin-button';
 import './vcf-svg-icons';
 
 const SVG_NOT_READY = 'Svg not ready. Try using the `svg-ready` event.';
+const EVENT_ATTR_PREFIX = 'on-';
 
 /**
  * `<vcf-svg>` is a Web component for manipulating and animating SVG graphics.
@@ -101,9 +102,9 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
           <iron-icon icon="vcf-svg:bullseye"></iron-icon>
         </vaadin-button>
         <div id="zoom" part="zoom">
-          <span>[[panZoomInfo.scale]]</span>
-          <span>[[panZoomInfo.x]]</span>
-          <span>[[panZoomInfo.y]]</span>
+          <span>[[zoom.scale]]</span>
+          <span>[[zoom.x]]</span>
+          <span>[[zoom.y]]</span>
         </div>
       </div>
     `;
@@ -138,7 +139,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
       },
 
       /**
-       * Enable pan and zoom functionality.
+       * Enable zoom and pan functionality.
        * @type {Boolean}
        */
       zoomable: {
@@ -151,7 +152,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
        * Current zoom and pan information.
        * @type {Object}
        */
-      panZoomInfo: {
+      zoom: {
         type: Object,
         value: () => ({ scale: '100%', x: '0', y: '0' })
       },
@@ -280,17 +281,44 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
     element.draggable(draggable);
     if (draggable) {
       element.addClass('draggable');
-      this._addElementEvents(element, dragEvents);
+      this._addElementEvents(element, dragEvents, false);
     } else {
       element.removeClass('draggable');
-      this._removeElementEvents(element, dragEvents);
+      this._removeElementEvents(element, dragEvents, false);
     }
   }
 
-  _addElementEvents(element, events) {
+  on(element, eventName) {
+    if (!Array.isArray(eventName)) eventName = [eventName];
+    this._addElementEvents(element, eventName);
+  }
+
+  off(element, eventName) {
+    if (!Array.isArray(eventName)) eventName = [eventName];
+    this._removeElementEvents(element, eventName);
+  }
+
+  _addElementEvents(element, events, prefix = true) {
     events.forEach(eventName => {
+      const modifedEventName = prefix ? `element-${eventName}` : eventName;
       element.listeners = element.listeners || {};
-      element.listeners[eventName] = e => this.dispatchEvent(new CustomEvent(eventName, { detail: e.detail }));
+      element.listeners[eventName] = e => {
+        if (eventName === 'dragend' && Object.keys(element.listeners).includes('click')) {
+          const bbox = e.detail.handler.el.bbox();
+          const originalBbox = e.detail.handler.box;
+          const dragged = bbox.x !== originalBbox.x && bbox.y !== originalBbox.y;
+          if (!dragged) return;
+          else element.dragged = true;
+        }
+        if (eventName === 'click' && element.dragged) {
+          element.dragged = false;
+          return;
+        }
+        const event = new CustomEvent(modifedEventName, { detail: e.detail, cancelable: e.cancelable });
+        event.originalEvent = e;
+        event.element = element;
+        this.dispatchEvent(event);
+      };
       element.node.addEventListener(eventName, element.listeners[eventName]);
     });
   }
@@ -425,8 +453,20 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
         const update = updates.shift();
         element[update.function](...update.args);
       }
-      this.draggable(element, element.attr('draggable') === 'true');
+      this._setEventListeners(element);
     }
+  }
+
+  _setEventListeners(element) {
+    this.draggable(element, element.attr('draggable') === 'true');
+    Object.keys(element.attr()).forEach(key => {
+      if (key.includes(EVENT_ATTR_PREFIX)) {
+        const eventName = key.replace(EVENT_ATTR_PREFIX, '');
+        const listen = element.attr(key) === 'true';
+        if (listen) this._addElementEvents(element, [eventName]);
+        else this._removeElementEvents(element, [eventName]);
+      }
+    });
   }
 
   _removePrivateAttributes(attributes) {
@@ -442,7 +482,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
 
   _transformChanged(transform) {
     this.$.toolbar.classList.add('zooming');
-    this.panZoomInfo = {
+    this.zoom = {
       scale: `${Math.floor(transform.k * 100)}%`,
       x: `x: ${Math.floor(transform.x)}`,
       y: `y: ${Math.floor(transform.y)}`
@@ -495,21 +535,46 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
    * Fired before `dragstart` (cancelable).
    *
    * @event beforedrag
+   * @param {Object} detail.event Original mouse/touch event
+   * @param {Element} detail.el Element reference (SVG.js wrapper)
+   *
    */
+
   /**
    * Fired before `dragmove`.
    *
    * @event dragstart
+   * @param {Object} detail
+   * @param {Object} detail.event Original mouse/touch event
+   * @param {Object} detail.box Original bbox of the element
+   * @param {Element} detail.el Element reference (SVG.js wrapper)
    */
+
   /**
    * Fired while dragging (cancelable).
    *
    * @event dragmove
+   * @param {Object} detail
+   * @param {Object} detail.event Original mouse/touch event
+   * @param {Object} detail.box New bbox of the element
+   * @param {Element} detail.el Element reference (SVG.js wrapper)
    */
+
   /**
    * Fired after `dragmove`.
    *
    * @event dragend
+   * @param {Object} detail
+   * @param {Object} detail.event Original mouse/touch event
+   * @param {Object} detail.box New bbox of the element
+   * @param {Element} detail.el Element reference (SVG.js wrapper)
+   */
+
+  /**
+   * Bubbled up <eventName> from an element.
+   *
+   * @event element-<eventName>
+   * @param {Object} originalEvent The original <eventName> event
    */
 }
 

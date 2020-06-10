@@ -24,6 +24,10 @@ const assets = [
   {
     from: resolve('./demo/svg-js-logo.png'),
     to: OUTPUT_PATH
+  },
+  {
+    from: resolve('./demo/vaadin-reindeer-logo.svg'),
+    to: OUTPUT_PATH
   }
 ];
 
