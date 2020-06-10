@@ -299,7 +299,7 @@
 
                 // Focus Element
                 focusElement.addEventListener('click', () => {
-                  if (svg.zoomable) svg.panTo(`[id="${elementList.value}"]`);
+                  if (svg.zoomable) svg.panTo('[id="' + elementList.value + '"]');
                 });
               });
             </script>
@@ -358,7 +358,7 @@
                   const draggable = !el.hasClass('draggable');
                   const borderRadius = draggable ? 10 : 0;
                   const bbox = el.bbox();
-                  title.words(`${draggable ? 'Disable' : 'Enable'} draggable`);
+                  title.words((draggable ? 'Disable' : 'Enable') + 'draggable');
 
                   // Animate rect radius change
                   rect
