@@ -334,7 +334,7 @@
               window.addEventListener('WebComponentsReady', () => {
                 const svg = document.querySelector('#draggable');
                 const rect = svg.draw.rect(100, 100);
-                const title = svg.draw.element('title').words('Enable draggable');
+                const title = svg.draw.element('title').words('Enable dragging');
                 const text = svg.draw
                   .text('Not draggable')
                   .fill('#fff')
@@ -358,7 +358,7 @@
                   const draggable = !el.hasClass('draggable');
                   const borderRadius = draggable ? 10 : 0;
                   const bbox = el.bbox();
-                  title.words((draggable ? 'Disable' : 'Enable') + 'draggable');
+                  title.words((draggable ? 'Disable' : 'Enable') + ' dragging');
 
                   // Animate rect radius change
                   rect

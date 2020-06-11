@@ -121,16 +121,17 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   static get properties() {
     return {
       /**
-       * Main SVG document.
+       * Main [Svg](https://svgjs.com/docs/3.0/container-elements/#svg-svg) element.
        *
-       * Refer to [SVG.js Docs](https://svgjs.com/docs/3.0) for more info.
+       * Returns `<svg>` (or `<g part="zoomContainer">` if `zoomable` is enabled).
+       *
        * @type {Svg}
        */
       draw: Svg,
 
       /**
-       * 1. [SVG() | Constructor](https://svgjs.com/docs/3.0/container-elements/#svg-constructor)
-       * 1. [SVG() | Find](https://svgjs.com/docs/3.0/referencing-creating-elements/#svg)
+       * 1. SVG() [Constructor](https://svgjs.com/docs/3.0/container-elements/#svg-constructor)
+       * 1. SVG() [Find](https://svgjs.com/docs/3.0/referencing-creating-elements/#svg)
        * @type {SVG}
        */
       SVG: {
@@ -176,7 +177,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   }
 
   /**
-   * Returns `List` of child elements.
+   * Returns [SVG.List](https://svgjs.com/docs/3.0/classes/#svg-list) of child elements.
    * @returns {List}
    */
   get children() {
@@ -197,7 +198,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
    * Add element to the svg.
    * If `parentElementId` is specified, it will be added to the element with that id.
    *
-   * Note: this method is intended for use by the [Java API](https://github.com/vaadin-component-factory/svg).
+   * _This method is used by the [Java API](https://github.com/vaadin-component-factory/svg)._
    *
    * @param {Object} attributes Element attributes
    * @param {Object} attributes.__constructor Element constructor (e.g. Rect)
@@ -216,7 +217,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   /**
    * Update element in the SVG.
    *
-   * Note: this method is intended for use by the [Java API](https://github.com/vaadin-component-factory/svg).
+   * _This method is used by the [Java API](https://github.com/vaadin-component-factory/svg)._
    *
    * @param {Object} attributes Element attributes
    * @param {Object} attributes.__constructor Element constructor (e.g. Rect)
@@ -290,7 +291,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   }
 
   /**
-   * Set SVG [viewBox](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/viewBox).
+   * Set [viewBox](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/viewBox) of `<svg>`.
    * Defines the position and dimension of the SVG viewport.
    *
    * Returns `draw` property.
@@ -336,7 +337,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
    * Pan to first element matching `selector`.
    * If `scale = true` will also zoom to fit element in viewport.
    *
-   * @param {String} selector CSS Selector.
+   * @param {String} selector CSS selector.
    * @param {Boolean} scale Set `false` to disable fit element in viewport.
    * @param {Number} duration Transition duration.
    */
@@ -387,7 +388,6 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   /**
    * This will dispatch the supplied `element`'s `eventName` events from the main `vcf-svg` web component.
    *
-   * Note:
    * - Dispatched events have "element-" prefix (e.g. `element-click`).
    * - Dispatched events have an `originalEvent` property to access the original event.
    *
@@ -638,55 +638,57 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   }
 
   /**
-   * Fired when the methods for the SVG in the `svg` slot can be used.
+   * Fired when the methods for the `<svg>` in the `"svg"` slot can be used.
+   * - `e.detail` __Object__ The `draw` property. Main [Svg](https://svgjs.com/docs/3.0/container-elements/#svg-svg) element.
    *
    * @event svg-ready
    */
 
   /**
    * Fired before `dragstart` (cancelable).
+   * - `e.detail` __Object__
+   * - `e.detail.event` __Event__ Original mouse/touch event.
+   * - `e.detail.el` __Element__ Element reference (SVG.js wrapper).
    *
    * @event beforedrag
-   * @param {Object} detail.event Original mouse/touch event
-   * @param {Element} detail.el Element reference (SVG.js wrapper)
    *
    */
 
   /**
    * Fired before `dragmove`.
+   * - `e.detail` __Object__
+   * - `e.detail.event` __Event__ Original mouse/touch event.
+   * - `e.detail.box` __Object__ New bbox of the element.
+   * - `e.detail.el` __Element__ Element reference (SVG.js wrapper).
    *
    * @event dragstart
-   * @param {Object} detail
-   * @param {Object} detail.event Original mouse/touch event
-   * @param {Object} detail.box Original bbox of the element
-   * @param {Element} detail.el Element reference (SVG.js wrapper)
    */
 
   /**
    * Fired while dragging (cancelable).
+   * - `e.detail` __Object__
+   * - `e.detail.event` __Event__ Original mouse/touch event.
+   * - `e.detail.box` __Object__ New bbox of the element.
+   * - `e.detail.el` __Element__ Element reference (SVG.js wrapper).
    *
    * @event dragmove
-   * @param {Object} detail
-   * @param {Object} detail.event Original mouse/touch event
-   * @param {Object} detail.box New bbox of the element
-   * @param {Element} detail.el Element reference (SVG.js wrapper)
    */
 
   /**
    * Fired after `dragmove`.
+   * - `e.detail` __Object__
+   * - `e.detail.event` __Event__ Original mouse/touch event.
+   * - `e.detail.box` __Object__ New bbox of the element.
+   * - `e.detail.el` __Element__ Element reference (SVG.js wrapper).
    *
    * @event dragend
-   * @param {Object} detail
-   * @param {Object} detail.event Original mouse/touch event
-   * @param {Object} detail.box New bbox of the element
-   * @param {Element} detail.el Element reference (SVG.js wrapper)
    */
 
   /**
-   * Bubbled up <eventName> from an element.
+   * Bubbled up `eventName` from an element.
+   * - `e.originalEvent` __Event__ The original `eventName` event.
    *
-   * @event element-<eventName>
-   * @param {Object} originalEvent The original <eventName> event
+   * @event element-eventName
    */
 }
 
