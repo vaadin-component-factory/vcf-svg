@@ -1,6 +1,6 @@
 {
   "name": "@vaadin-component-factory/vcf-svg",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Web component wrapper for SVG.js.",
   "main": "src/vcf-svg.js",
   "module": "src/vcf-svg.js",
