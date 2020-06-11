@@ -115,7 +115,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   }
 
   static get version() {
-    return '1.0.2';
+    return '1.0.3';
   }
 
   static get properties() {
@@ -176,6 +176,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   }
 
   /**
+   * Returns `List` of child elements.
    * @returns {List}
    */
   get children() {
@@ -192,6 +193,19 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
     }
   }
 
+  /**
+   * Add element to the svg.
+   * If `parentElementId` is specified, it will be added to the element with that id.
+   *
+   * Note: this method is intended for use by the [Java API](https://github.com/vaadin-component-factory/svg).
+   *
+   * @param {Object} attributes Element attributes
+   * @param {Object} attributes.__constructor Element constructor (e.g. Rect)
+   * @param {Object} attributes.__constructorArgs Array of constructor args (Rect = [100, 100] = [width, height])
+   * @param {Object} attributes.__updates Array of "updates" to be applied after element creation ([ {"function": "move", "args": [100, 100]} ])
+   * @param {Object} attributes.__elements Array of Ids of other elements to be added to this element (["circle1"])
+   * @param {String} parentElementId Id of element to add this element to.
+   */
   add(attributes, parentElementId) {
     this._drawSafe(() => {
       const parentElement = this._getParentElement(parentElementId);
@@ -199,13 +213,17 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
     });
   }
 
-  remove(elementId) {
-    this._drawSafe(() => {
-      const element = this.findOneById(elementId);
-      element.remove();
-    });
-  }
-
+  /**
+   * Update element in the SVG.
+   *
+   * Note: this method is intended for use by the [Java API](https://github.com/vaadin-component-factory/svg).
+   *
+   * @param {Object} attributes Element attributes
+   * @param {Object} attributes.__constructor Element constructor (e.g. Rect)
+   * @param {Object} attributes.__constructorArgs Array of constructor args (Rect = [100, 100] = [width, height])
+   * @param {Array} attributes.__updates Array of "updates" to be applied after element creation ([ {"function": "move", "args": [100, 100]} ])
+   * @param {Array} attributes.__elements Array of Ids of other elements to be added to this element (["circle1"])
+   */
   update(attributes) {
     this._drawSafe(() => {
       const element = this.findOneById(attributes.id);
@@ -213,6 +231,28 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
     });
   }
 
+  /**
+   * Remove element with `elementId` from the SVG.
+   *
+   * @param {String} elementId
+   */
+  remove(elementId) {
+    this._drawSafe(() => {
+      const element = this.findOneById(elementId);
+      element.remove();
+    });
+  }
+
+  /**
+   * Find elements matching `selector`.
+   * If `parentElementId` is specified, will search inside the element with that id.
+   *
+   * Returns [SVG.List](https://svgjs.com/docs/3.0/classes/#svg-list)
+   *
+   * @param {String} selector CSS selector
+   * @param {String} parentElementId Id of parent element
+   * @returns {List}
+   */
   find(selector, parentElementId) {
     if (!this.draw) throw new Error(SVG_NOT_READY);
     else {
@@ -221,6 +261,14 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
     }
   }
 
+  /**
+   * Find first element matching `selector`.
+   * If `parentElementId` is specified, will search inside the element with that id.
+   *
+   * @param {String} selector CSS selector
+   * @param {String} parentElementId Id of parent element
+   * @returns {Element}
+   */
   findOne(selector, parentElementId) {
     if (!this.draw) throw new Error(SVG_NOT_READY);
     else {
@@ -231,20 +279,52 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
     }
   }
 
+  /**
+   * Find first element matching `id`.
+   *
+   * @param {String} id Element id.
+   * @returns {Element}
+   */
   findOneById(id) {
     return this.findOne(`[id="${id}"]`);
   }
 
-  viewbox(...args) {
-    if (this._svg) this._svg.viewbox(...args);
+  /**
+   * Set SVG [viewBox](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/viewBox).
+   * Defines the position and dimension of the SVG viewport.
+   *
+   * Returns `draw` property.
+   *
+   * @param {Number} minx Min x value.
+   * @param {Number} miny Min y value.
+   * @param {Number} height Width.
+   * @param {Number} width Height.
+   * @returns {Svg}
+   */
+  viewbox(minx, miny, height, width) {
+    if (this._svg) this._svg.viewbox(minx, miny, height, width);
     return this.draw;
   }
 
-  size(...args) {
-    if (this._svg) this._svg.size(...args);
+  /**
+   * Set SVG size.
+   *
+   * Returns `draw` property.
+   *
+   * @param {Number} height Width.
+   * @param {Number} width Height.
+   * @returns {Svg}
+   */
+  size(width, height) {
+    if (this._svg) this._svg.size(width, height);
     return this.draw;
   }
 
+  /**
+   * Reset zoom scale and pan to initial values (100%, x: 0, y: 0).
+   *
+   * @param {Number} duration Transition duration.
+   */
   resetZoom(duration = 1000) {
     select(this._svg.node)
       .transition()
@@ -252,6 +332,14 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
       .call(this._zoom.transform, zoomIdentity);
   }
 
+  /**
+   * Pan to first element matching `selector`.
+   * If `scale = true` will also zoom to fit element in viewport.
+   *
+   * @param {String} selector CSS Selector.
+   * @param {Boolean} scale Set `false` to disable fit element in viewport.
+   * @param {Number} duration Transition duration.
+   */
   panTo(selector, scale = true, duration = 1000) {
     const d3Svg = select(this._svg.node);
     const element = this.zoomContainer.findOne(selector);
@@ -276,24 +364,47 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
     }
   }
 
+  /**
+   * Toggle draggable events for `element`.
+   * If `scale = true` will also zoom to fit element in viewport.
+   *
+   * @param {Element} element Element (SVG.js wrapper).
+   * @param {Boolean} draggable Toggle draggable events.
+   */
   draggable(element, draggable) {
     const dragEvents = ['beforedrag', 'dragstart', 'dragmove', 'dragend'];
     if (draggable && !element.hasClass('draggable')) {
       element.draggable(true);
       element.addClass('draggable');
       this._addElementEvents(element, dragEvents, false);
-    } else {
+    } else if (!draggable) {
       element.draggable(false);
       element.removeClass('draggable');
       this._removeElementEvents(element, dragEvents, false);
     }
   }
 
+  /**
+   * This will dispatch the supplied `element`'s `eventName` events from the main `vcf-svg` web component.
+   *
+   * Note:
+   * - Dispatched events have "element-" prefix (e.g. `element-click`).
+   * - Dispatched events have an `originalEvent` property to access the original event.
+   *
+   * @param {Element} element Element (SVG.js wrapper).
+   * @param {String} eventName Event name.
+   */
   on(element, eventName) {
     if (!Array.isArray(eventName)) eventName = [eventName];
     this._addElementEvents(element, eventName);
   }
 
+  /**
+   * Stop dispatiching `element`'s `eventName` events.
+   *
+   * @param {Element} element Element (SVG.js wrapper).
+   * @param {String} eventName Event name.
+   */
   off(element, eventName) {
     if (!Array.isArray(eventName)) eventName = [eventName];
     this._removeElementEvents(element, eventName);

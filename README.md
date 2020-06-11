@@ -6,6 +6,8 @@
 
 Web component wrapper for [SVG.js](https://svgjs.com/docs/3.0).
 
+![vcf-svg screenshot](./screenshot.png)
+
 [Live demo ↗](https://vcf-svg.netlify.com)
 |
 [API documentation ↗](https://vcf-svg.netlify.com/api/#/elements/Vaadin.VcfSvg)
