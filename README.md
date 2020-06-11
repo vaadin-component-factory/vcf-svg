@@ -6,7 +6,7 @@
 
 Web component wrapper for [SVG.js](https://svgjs.com/docs/3.0).
 
-![vcf-svg screenshot](./screenshot.png)
+![Screenshot 2020-06-11 at 15 34 34](https://user-images.githubusercontent.com/3392815/84385972-2853ac00-abf9-11ea-8604-fef5a8d55315.png)
 
 [Live demo ↗](https://vcf-svg.netlify.com)
 |
