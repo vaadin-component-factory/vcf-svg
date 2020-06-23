@@ -165,7 +165,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   }
 
   static get version() {
-    return '1.0.3';
+    return '1.0.4';
   }
 
   static get properties() {
