@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+
 /**
  * @license
  * Copyright (C) 2015 Vaadin Ltd.
@@ -10,7 +12,7 @@ import { html, PolymerElement } from '@polymer/polymer/polymer-element';
 import { ThemableMixin } from '@vaadin/vaadin-themable-mixin';
 import { ElementMixin } from '@vaadin/vaadin-element-mixin';
 // eslint-disable-next-line no-unused-vars
-import { SVG, Svg, List, Element } from '@svgdotjs/svg.js';
+import { SVG, Svg, List, Element, Shape } from '@svgdotjs/svg.js';
 import { zoom, zoomIdentity, select, event } from 'd3';
 import '../lib/svg.draggable';
 import '@vaadin/vaadin-license-checker/vaadin-license-checker';
@@ -23,11 +25,49 @@ const EVENT_ATTR_PREFIX = 'on-';
 /**
  * `<vcf-svg>` is a Web component for manipulating and animating SVG graphics.
  *
- * This is a wrapper for [SVG.js](https://svgjs.com/docs/3.0).
+ * - Web Component wrapper for the JS library [SVG.js](https://svgjs.com/docs/3.0).
+ * - Zoom and pan functionality implemented with [d3-zoom](https://github.com/d3/d3-zoom).
+ * - Draggable implemented with plugin [svg.draggable.js](https://github.com/svgdotjs/svg.draggable.js).
  *
  * ```html
- * <vcf-svg></vcf-svg>
+ * <vcf-svg zoomable>
+ *  <svg viewbox="0 0 400 200">
+ *    <rect x="0" y="0" width="100" height="100" draggable="true"></rect>
+ *  </svg>
+ * </vcf-svg>
  * ```
+ *
+ * ### Slots
+ *
+ * Slot name | Content description | Default
+ * --|--|--
+ * _no-slot_ | `<svg>` element to be used or any container element to insert default `<svg>` into. Only first element is used. | `<svg></svg>`
+ * _svg_ | `<svg>` element to be used or any container element to insert default `<svg>` into. Only first element is used. | `<svg></svg>`
+ *
+ * > __NOTE:__ If slotted element not an `<svg>`, [`SVG()`](https://svgjs.com/docs/3.0/container-elements/#svg-constructor) used to add default.
+ *
+ * ### Styling
+ *
+ * The following Shadow DOM parts are available for styling the overlay component itself:
+ *
+ * Part name  | Description
+ * --|--
+ * `toolbar` | Toolbar container.
+ * `reset-zoom-button` | Reset zoom button.
+ * `zoom-display` | Zoom information container.
+ *
+ * The following custom properties are available for styling:
+ *
+ * Custom property | Description | Default
+ * --|--|--
+ * `--vcf-svg-toolbar-display` | `display` property for `toolbar` part. | `flex`
+ * `--vcf-svg-toolbar-top` | `top` property for `toolbar` part. | `unset`
+ * `--vcf-svg-toolbar-right` | `right` property for `toolbar` part. | `unset`
+ * `--vcf-svg-toolbar-bottom` | `bottom` property for `toolbar` part. | `0`
+ * `--vcf-svg-toolbar-left` | `left` property for `toolbar` part. | `unset`
+ * `--vcf-svg-toolbar-border-radius` | `border-radius` property for `toolbar` part. | `0 var(--lumo-border-radius) 0 0`
+ *
+ * See [ThemableMixin – how to apply styles for shadow parts](https://github.com/vaadin/vaadin-themable-mixin/wiki)
  *
  * @memberof Vaadin
  * @mixes ElementMixin
@@ -42,6 +82,12 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
           display: block;
           position: relative;
           overflow: hidden;
+          --vcf-svg-toolbar-display: flex;
+          --vcf-svg-toolbar-top: unset;
+          --vcf-svg-toolbar-right: unset;
+          --vcf-svg-toolbar-bottom: 0;
+          --vcf-svg-toolbar-left: unset;
+          --vcf-svg-toolbar-border-radius: 0 var(--lumo-border-radius) 0 0;
         }
 
         :host([zoomable]:active) {
@@ -59,12 +105,14 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
 
         #toolbar {
           position: absolute;
-          bottom: 0;
-          display: flex;
-          padding-right: var(--lumo-space-m);
-          border-top-right-radius: var(--lumo-border-radius);
           user-select: none;
           transition: all 0.2s;
+          display: var(--vcf-svg-toolbar-display);
+          top: var(--vcf-svg-toolbar-top);
+          right: var(--vcf-svg-toolbar-right);
+          bottom: var(--vcf-svg-toolbar-bottom);
+          left: var(--vcf-svg-toolbar-left);
+          border-radius: 0 var(--lumo-border-radius) 0 0;
         }
 
         #toolbar.zooming {
@@ -87,6 +135,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
           font-size: var(--lumo-font-size-m);
           opacity: 0;
           margin-top: 2px;
+          padding-right: var(--lumo-space-m);
           transition: opacity 0.2s;
           white-space: nowrap;
         }
@@ -96,12 +145,13 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
           margin-left: var(--lumo-space-m);
         }
       </style>
+      <slot id="slot" on-slotchange="_onSvgSlotChange"></slot>
       <slot id="svgSlot" name="svg" on-slotchange="_onSvgSlotChange"></slot>
       <div id="toolbar" part="toolbar">
-        <vaadin-button id="resetZoom" theme="tertiary icon" title="Reset Zoom">
+        <vaadin-button id="resetZoom" theme="tertiary icon" title="Reset Zoom" part="reset-zoom-button">
           <iron-icon icon="vcf-svg:bullseye"></iron-icon>
         </vaadin-button>
-        <div id="zoom" part="zoom">
+        <div id="zoom" part="zoom-display">
           <span>[[zoom.scale]]</span>
           <span>[[zoom.x]]</span>
           <span>[[zoom.y]]</span>
@@ -155,7 +205,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
        */
       zoom: {
         type: Object,
-        value: () => ({ scale: '100%', x: '0', y: '0' })
+        computed: '_getZoom(_transform)'
       },
 
       /**
@@ -168,7 +218,28 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
        * Height of SVG.
        * @type {String}
        */
-      height: String
+      height: String,
+
+      /**
+       * @protected
+       * Queue of updates to run after the `svg-ready` event.
+       */
+      _updates: {
+        type: Array,
+        value: () => []
+      },
+
+      /**
+       * @private
+       * Array of objects with props:
+       * - 'id': Id generated for the `__debounce` callback function.
+       * - `timeoutId`: Id returned by `setTimeout`.
+       * Used by `__debounce` for cancelling previous timeouts.
+       */
+      __timeouts: {
+        type: Array,
+        value: () => []
+      }
     };
   }
 
@@ -187,10 +258,10 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   ready() {
     super.ready();
     this.$.resetZoom.addEventListener('click', () => this.resetZoom());
-    if (!this.$.svgSlot.assignedNodes().length) {
+    if (!this.$.svgSlot.assignedNodes().length && !this.$.slot.assignedNodes().length) {
       this.SVG()
-        .addTo(this)
-        .attr({ slot: 'svg' });
+        .attr({ slot: 'svg' })
+        .addTo(this);
     }
   }
 
@@ -198,36 +269,42 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
    * Add element to the svg.
    * If `parentElementId` is specified, it will be added to the element with that id.
    *
-   * _This method is used by the [Java API](https://github.com/vaadin-component-factory/svg)._
+   * An `attributes` object may be used instead of element:
+   * - `attributes` __Object__
+   * - `attributes.__constructor` __String__ Element constructor (e.g. Rect)
+   * - `attributes.__constructorArgs` __Array<Any>__ Array of constructor args (Rect = [100, 100] = [width, height])
+   * - `attributes.__updates` __Array<Object>__ Array of "updates" to be applied after element creation ([ {"function": "move", "args": [100, 100]} ])
+   * - `attributes.__elements` __Array<String>__ Array of Ids of other elements to be added to this element (["circle1"])
    *
-   * @param {Object} attributes Element attributes
-   * @param {Object} attributes.__constructor Element constructor (e.g. Rect)
-   * @param {Object} attributes.__constructorArgs Array of constructor args (Rect = [100, 100] = [width, height])
-   * @param {Object} attributes.__updates Array of "updates" to be applied after element creation ([ {"function": "move", "args": [100, 100]} ])
-   * @param {Object} attributes.__elements Array of Ids of other elements to be added to this element (["circle1"])
+   * _Used by the [Java API](https://github.com/vaadin-component-factory/svg)._
+   *
+   * @param {Object} element [Shape](https://svgjs.com/docs/3.0/shape-elements/) `element` or `attributes` object (described above).
    * @param {String} parentElementId Id of element to add this element to.
    */
-  add(attributes, parentElementId) {
-    this._drawSafe(() => {
+  add(element, parentElementId) {
+    this._afterSvgReady(() => {
       const parentElement = this._getParentElement(parentElementId);
-      this._createElement(attributes, parentElement);
+      if (element instanceof Shape) parentElement.add(element);
+      else this._createElement(element, parentElement);
     });
   }
 
   /**
-   * Update element in the SVG.
+   * Update attributes of an element in the SVG.
+   * - `attributes` __Object__
+   * - `attributes.__constructor` __String__ Element constructor (e.g. Rect)
+   * - `attributes.__constructorArgs` __Array<Any>__ Array of constructor args (`Rect = [100, 100] = [width, height]`)
+   * - `attributes.__updates` __Array<Object>__ Array of "updates" to be applied after element creation (`[ {"function": "move", "args": [100, 100]} ]`)
+   * - `attributes.__elements` __Array<String>__ Array of Ids of other elements to be added to this element (`["circle1"]`)
    *
-   * _This method is used by the [Java API](https://github.com/vaadin-component-factory/svg)._
+   * _Used by the [Java API](https://github.com/vaadin-component-factory/svg)._
    *
-   * @param {Object} attributes Element attributes
-   * @param {Object} attributes.__constructor Element constructor (e.g. Rect)
-   * @param {Object} attributes.__constructorArgs Array of constructor args (Rect = [100, 100] = [width, height])
-   * @param {Array} attributes.__updates Array of "updates" to be applied after element creation ([ {"function": "move", "args": [100, 100]} ])
-   * @param {Array} attributes.__elements Array of Ids of other elements to be added to this element (["circle1"])
+   * @param {Object} attributes `attributes` object (described above).
+   * @param {Object} selector CSS selector for element to update.
    */
-  update(attributes) {
-    this._drawSafe(() => {
-      const element = this.findOneById(attributes.id);
+  update(attributes, selector) {
+    this._afterSvgReady(() => {
+      const element = this.findOne(selector || `[id="${attributes.id}"]`);
       this._executeServerUpdates(element, attributes);
     });
   }
@@ -238,7 +315,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
    * @param {String} elementId
    */
   remove(elementId) {
-    this._drawSafe(() => {
+    this._afterSvgReady(() => {
       const element = this.findOneById(elementId);
       element.remove();
     });
@@ -294,35 +371,27 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
    * Set [viewBox](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/viewBox) of `<svg>`.
    * Defines the position and dimension of the SVG viewport.
    *
-   * Returns `draw` property.
-   *
    * @param {Number} minx Min x value.
    * @param {Number} miny Min y value.
-   * @param {Number} height Width.
-   * @param {Number} width Height.
-   * @returns {Svg}
+   * @param {Number} width Width.
+   * @param {Number} height Height.
    */
-  viewbox(minx, miny, height, width) {
-    if (this._svg) this._svg.viewbox(minx, miny, height, width);
-    return this.draw;
+  viewbox(...args) {
+    this._afterSvgReady(() => this._svg && this._svg.viewbox(...args));
   }
 
   /**
    * Set SVG size.
    *
-   * Returns `draw` property.
-   *
-   * @param {Number} height Width.
-   * @param {Number} width Height.
-   * @returns {Svg}
+   * @param {Number} width Width.
+   * @param {Number} height Height.
    */
-  size(width, height) {
-    if (this._svg) this._svg.size(width, height);
-    return this.draw;
+  size(...args) {
+    this._afterSvgReady(() => this._svg && this._svg.size(...args));
   }
 
   /**
-   * Reset zoom scale and pan to initial values (100%, x: 0, y: 0).
+   * Reset zoom scale and pan to initial values (scale: 100%, x: 0, y: 0).
    *
    * @param {Number} duration Transition duration.
    */
@@ -485,7 +554,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
     };
   }
 
-  _setPanZoomEvents(zoomable) {
+  _setZoomEvents(zoomable) {
     const d3Svg = select(this._svg.node);
     if (zoomable) {
       const d3ZoomContainer = select(this.zoomContainer.node);
@@ -529,18 +598,17 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
     }
   }
 
-  _onSvgSlotChange() {
-    const slotted = this.$.svgSlot.assignedNodes().filter(node => node.tagName.toLowerCase() === 'svg');
-    if (slotted.length) {
-      this._svg = this.SVG(slotted[0]);
+  _onSvgSlotChange(e) {
+    const slotted = e.target.assignedNodes().filter(node => node.nodeType === 1)[0];
+    if (slotted) {
+      this._svg = slotted.tagName.toLowerCase() === 'svg' ? this.SVG(slotted) : this.SVG().addTo(slotted);
       this.set('draw', this._svg);
       this._executeUpdates();
       this.dispatchEvent(new CustomEvent('svg-ready'), { detail: this.draw });
     }
   }
 
-  _drawSafe(callback) {
-    this._updates = this._updates || [];
+  _afterSvgReady(callback) {
     if (!this.draw) this._updates.push(callback);
     else callback();
   }
@@ -585,25 +653,28 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
     Object.keys(attributes).forEach(key => key.includes('__') && delete attributes[key]);
   }
 
-  _zoomableChanged(zoomable, draw) {
-    if (draw && this._svg) {
-      this._setZoomContainer(zoomable);
-      this._setPanZoomEvents(zoomable);
-    }
-  }
-
-  _transformChanged(transform) {
-    this.$.toolbar.classList.add('zooming');
-    this.zoom = {
+  _getZoom(transform) {
+    return {
       scale: `${Math.floor(transform.k * 100)}%`,
       x: `x: ${Math.floor(transform.x)}`,
       y: `y: ${Math.floor(transform.y)}`
     };
+  }
+
+  _zoomableChanged(zoomable, draw) {
+    if (draw && this._svg) {
+      this._setZoomContainer(zoomable);
+      this._setZoomEvents(zoomable);
+    }
+  }
+
+  _transformChanged() {
+    this.$.toolbar.classList.add('zooming');
     this.__debounce(() => this.$.toolbar.classList.remove('zooming'), 2000);
   }
 
   _dimensionsChanged(width, height) {
-    this._drawSafe(() => {
+    this._afterSvgReady(() => {
       if (width) this._svg.css({ width });
       if (height) this._svg.css({ height });
     });
@@ -616,12 +687,11 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
       timeout = { id };
       this.__timeouts.push(timeout);
     }
-    clearTimeout(timeout.value);
-    timeout.value = setTimeout(fn, duration);
+    clearTimeout(timeout.timeoutId);
+    timeout.timeoutId = setTimeout(fn, duration);
   }
 
   __getTimeout(id) {
-    this.__timeouts = this.__timeouts || [];
     return this.__timeouts.filter(timeout => timeout && timeout.id === id)[0];
   }
 
