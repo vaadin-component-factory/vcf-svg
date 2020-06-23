@@ -4,7 +4,11 @@
 [![npm version](https://badgen.net/npm/v/@vaadin-component-factory/vcf-svg)](https://www.npmjs.com/package/@vaadin-component-factory/vcf-svg)
 [![Published on Vaadin Directory](https://img.shields.io/badge/Vaadin%20Directory-published-00b4f0.svg)](https://vaadin.com/directory/component/vaadin-component-factoryvcf-svg)
 
-Web component wrapper for [SVG.js](https://svgjs.com/docs/3.0).
+Web Component for manipulating and animating [SVG](https://developer.mozilla.org/en-US/docs/Web/SVG).
+
+- Web Component wrapper for the JS library [SVG.js](https://svgjs.com/docs/3.0).
+- Zoom and pan functionality implemented with [d3-zoom](https://github.com/d3/d3-zoom).
+- Draggable functionality implemented with plugin [svg.draggable.js](https://github.com/svgdotjs/svg.draggable.js).
 
 ![Screenshot 2020-06-11 at 15 34 34](https://user-images.githubusercontent.com/3392815/84385972-2853ac00-abf9-11ea-8604-fef5a8d55315.png)
 

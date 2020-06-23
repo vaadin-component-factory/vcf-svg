@@ -27,7 +27,7 @@ const EVENT_ATTR_PREFIX = 'on-';
  *
  * - Web Component wrapper for the JS library [SVG.js](https://svgjs.com/docs/3.0).
  * - Zoom and pan functionality implemented with [d3-zoom](https://github.com/d3/d3-zoom).
- * - Draggable implemented with plugin [svg.draggable.js](https://github.com/svgdotjs/svg.draggable.js).
+ * - Draggable functionality implemented with plugin [svg.draggable.js](https://github.com/svgdotjs/svg.draggable.js).
  *
  * ```html
  * <vcf-svg zoomable>
@@ -272,9 +272,12 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
    * An `attributes` object may be used instead of element:
    * - `attributes` __Object__
    * - `attributes.__constructor` __String__ Element constructor (e.g. Rect)
-   * - `attributes.__constructorArgs` __Array<Any>__ Array of constructor args (Rect = [100, 100] = [width, height])
-   * - `attributes.__updates` __Array<Object>__ Array of "updates" to be applied after element creation ([ {"function": "move", "args": [100, 100]} ])
-   * - `attributes.__elements` __Array<String>__ Array of Ids of other elements to be added to this element (["circle1"])
+   * - `attributes.__constructorArgs` __Array<Any>__ Array of constructor args
+   *   - Example: `Rect = [100, 100] = [width, height]`
+   * - `attributes.__updates` __Array<Object>__ Array of "updates" to be applied after element creation
+   *   - Example: `[ {"function": "move", "args": [100, 100]} ]`
+   * - `attributes.__elements` __Array<String>__ Array of Ids of other elements to be added to this element
+   *   - Example: `["circle1", "rect1"]`
    *
    * _Used by the [Java API](https://github.com/vaadin-component-factory/svg)._
    *
@@ -293,9 +296,12 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
    * Update attributes of an element in the SVG.
    * - `attributes` __Object__
    * - `attributes.__constructor` __String__ Element constructor (e.g. Rect)
-   * - `attributes.__constructorArgs` __Array<Any>__ Array of constructor args (`Rect = [100, 100] = [width, height]`)
-   * - `attributes.__updates` __Array<Object>__ Array of "updates" to be applied after element creation (`[ {"function": "move", "args": [100, 100]} ]`)
-   * - `attributes.__elements` __Array<String>__ Array of Ids of other elements to be added to this element (`["circle1"]`)
+   * - `attributes.__constructorArgs` __Array<Any>__ Array of constructor args
+   *   - Example: `Rect = [100, 100] = [width, height]`
+   * - `attributes.__updates` __Array<Object>__ Array of "updates" to be applied after element creation
+   *   - Example: `[ {"function": "move", "args": [100, 100]} ]`
+   * - `attributes.__elements` __Array<String>__ Array of Ids of other elements to be added to this element
+   *   - Example: `["circle1", "rect1"]`
    *
    * _Used by the [Java API](https://github.com/vaadin-component-factory/svg)._
    *
