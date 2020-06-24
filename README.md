@@ -48,9 +48,9 @@ Add `<vcf-svg>` element to the page.
 
 1. Run `npm start` to open the demo.
 
-## Contributing
+## Server-side API
 
-To contribute to the component, please read [the guideline](https://github.com/vaadin/vaadin-core/blob/master/CONTRIBUTING.md) first.
+This is the client-side (Polymer 3) web component. If you are looking for this web components server-side (Java) API for the Vaadin Platform, it can be found here: https://vaadin.com/directory/component/svg-component
 
 ## Vaadin Prime
 
@@ -60,4 +60,4 @@ This component is available in the Vaadin Prime subscription. It is still open s
 
 Commercial Vaadin Add-on License version 3 (CVALv3). For license terms, see LICENSE.
 
-Vaadin collects development time usage statistics to improve this product. For details and to opt-out, see https://github.com/vaadin/vaadin-usage-statistics.
+Vaadin collects development time usage statistics to improve this product. For details and to opt-out, see: https://github.com/vaadin/vaadin-usage-statistics
