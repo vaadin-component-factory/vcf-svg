@@ -61,12 +61,12 @@
     <script>
       window.addEventListener('WebComponentsReady', () => {
         document.querySelectorAll('.hidden').forEach(element => element.classList.remove('hidden'));
-
-        // Sticky Copy Button
         document.querySelectorAll('demo-snippet').forEach(element => {
           const codeContainer = element.shadowRoot.querySelector('.code-container');
           const copyButton = codeContainer.querySelector('#copyButton');
-          codeContainer.style.maxHeight = '400px';
+          // Code Container max height
+          codeContainer.style.maxHeight = '600px';
+          // Sticky Copy Button
           codeContainer.addEventListener('scroll', e => (copyButton.style.top = e.target.scrollTop + 'px'), {
             capture: true,
             passive: true
