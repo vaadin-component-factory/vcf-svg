@@ -1,100 +1,140 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="hidden">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes" />
     <title>vcf-svg demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet" />
     <script dev src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
     <script dev type="module" src="demo.js"></script>
     <custom-style>
       <style is="custom-style" include="demo-pages-shared-styles lumo-typography">
+        html {
+          opacity: 1;
+          transition: opacity 0.5s;
+        }
+
         body {
           background-color: var(--lumo-base-color);
           padding: 0;
         }
+
         h1.main {
           display: flex;
           align-items: center;
           padding: 0 0 var(--lumo-space-l) var(--lumo-space-m);
         }
+
         h1.main a {
           margin: 0 var(--lumo-space-m) 0 auto;
         }
+
         h1.main img {
           height: 3em;
         }
+
         h2 {
           padding: var(--lumo-space-l) 0 var(--lumo-space-l) var(--lumo-space-m);
         }
+
         vcf-anchor-nav {
-          opacity: 1;
-          transition: opacity 0.5s;
-          --_anchor-nav-inner-max-width: 1000px;
+          --anchor-nav-inner-max-width: 1000px;
         }
+
         vcf-anchor-nav::part(tabs) {
           box-shadow: inset 0 -1px 0 0 var(--lumo-contrast-20pct);
         }
+
         vcf-anchor-nav-section {
           height: auto;
           background-color: var(--lumo-base-color);
         }
+
         vaadin-button.nav {
           cursor: pointer;
         }
+
         .hidden {
           opacity: 0;
         }
+
         .centered {
           max-width: 1000px;
         }
+
         .nav {
           margin: var(--lumo-space-l) var(--lumo-space-m) var(--lumo-space-l) calc(var(--lumo-button-size) * -1 / 6);
         }
+
         code:not(.main) {
           display: inline-block;
           padding: 2px 4px;
           background: var(--lumo-shade-10pct);
           border-radius: var(--lumo-border-radius);
         }
+
+      </style>
+      <style id="codeContainerStyles">
+        .code-container {
+          overflow-x: hidden;
+          overflow-y: scroll;
+        }
+
+        code:not(.main) {
+          font-family: 'Fira Code', monospace;
+        }
+
+        #copyButton {
+          display: none;
+        }
+
+        #copyVaadinButton {
+          position: absolute;
+          top: -1px;
+          right: -1px;
+          margin: 0;
+          text-transform: uppercase;
+          border: none;
+          border-radius: 0;
+          border-bottom-left-radius: var(--lumo-border-radius);
+          cursor: pointer;
+          background: #e0e0e0;
+          color: #333;
+          font-size: 12px;
+        }
+
+        .overflow:not(.top) {
+          box-shadow: inset 0 8px 10px -15px #000;
+        }
+
+        .overflow:not(.top):not(.bottom) {
+          box-shadow: inset 0 8px 10px -15px #000, inset 0 -12px 15px -20px #000;
+        }
+
+        .overflow:not(.bottom) {
+          box-shadow: inset 0 -12px 15px -20px #000;
+        }
+
       </style>
     </custom-style>
-    <script>
-      window.addEventListener('WebComponentsReady', () => {
-        document.querySelectorAll('.hidden').forEach(element => element.classList.remove('hidden'));
-        document.querySelectorAll('demo-snippet').forEach(element => {
-          const codeContainer = element.shadowRoot.querySelector('.code-container');
-          const copyButton = codeContainer.querySelector('#copyButton');
-          // Code Container max height
-          codeContainer.style.maxHeight = '600px';
-          // Sticky Copy Button
-          codeContainer.addEventListener('scroll', e => (copyButton.style.top = e.target.scrollTop + 'px'), {
-            capture: true,
-            passive: true
-          });
-        });
-      });
-    </script>
   </head>
   <body>
-    <vcf-anchor-nav fullscreen class="hidden">
+    <vcf-anchor-nav fullscreen>
       <a slot="header" href="/api/#/elements/Vaadin.VcfSvg">
-        <vaadin-button theme="tertiary" class="nav hidden">
+        <vaadin-button theme="tertiary" class="nav">
           <iron-icon icon="lumo:angle-right" slot="suffix"></iron-icon>
           API
         </vaadin-button>
       </a>
-
-      <h1 slot="header" class="main hidden">
+      <h1 slot="header" class="main">
         <code class="main">&lt;vcf-svg&gt;</code>
-        <a href="https://svgjs.com/docs/3.0/" title="Wrapper for SVG.js"><img src="svg-js-logo.png"/></a>
+        <a href="https://svgjs.com/docs/3.0/" title="vcf-svg is a web component wrapper for SVG.js"><img src="svg-js-logo.png" /></a>
       </h1>
-
       <vcf-anchor-nav-section id="elements-example" name="All Elements">
-        <h2 slot="header" class="hidden">All Elements</h2>
+        <h2 slot="header">All Elements</h2>
         <demo-snippet>
           <template>
             <vcf-svg id="elements"></vcf-svg>
-
             <script>
               window.addEventListener('WebComponentsReady', () => {
                 const svg = document.querySelector('#elements');
@@ -134,7 +174,7 @@
                 svg.draw
                   .polyline('50,0 60,40 100,50 60,60 50,100 40,60 0,50 40,40')
                   .fill('none')
-                  .stroke({ color: '#f06', width: 4, linecap: 'round', linejoin: 'round' })
+                  .stroke({color: '#f06', width: 4, linecap: 'round', linejoin: 'round'})
                   .move((x = 20), (y += space));
 
                 // Polygon
@@ -147,13 +187,13 @@
                 svg.draw
                   .path('M0 0 H50 A20 20 0 1 0 100 50 v25 C50 125 0 85 0 85 z')
                   .fill('none')
-                  .stroke({ color: '#f06', width: 4, linecap: 'round', linejoin: 'round' })
+                  .stroke({color: '#f06', width: 4, linecap: 'round', linejoin: 'round'})
                   .move((x += space), y);
 
                 // Text
                 svg.draw
                   .text('Sample text.')
-                  .font({ fill: '#f06', family: "'Roboto', 'Noto', sans-serif" })
+                  .font({fill: '#f06', family: "'Roboto', 'Noto', sans-serif"})
                   .center((x += space) + size * 0.5, y + size * 0.5);
 
                 // Image
@@ -203,7 +243,7 @@
                 svg.draw
                   .findOne('text')
                   .clone()
-                  .font({ fill: '#fff' })
+                  .font({fill: '#fff'})
                   .center(x + size * 0.5, y + size * 0.5 + 20)
                   .addTo(g);
               });
@@ -211,9 +251,8 @@
           </template>
         </demo-snippet>
       </vcf-anchor-nav-section>
-
       <vcf-anchor-nav-section name="Zoom and Pan">
-        <h2 slot="header" class="hidden">Zoom and Pan</h2>
+        <h2 slot="header">Zoom and Pan</h2>
         <demo-snippet>
           <template>
             <vaadin-button id="toggle-zoomable">Toggle Zoomable</vaadin-button>
@@ -221,40 +260,16 @@
             <vaadin-button id="focus-element" theme="tertiary icon" title="Focus Element" disabled>
               <iron-icon icon="vcf-svg:bullseye"></iron-icon>
             </vaadin-button>
-
             <vcf-svg id="zoom-pan">
               <svg viewBox="0 0 500 380">
                 <rect id="rect" width="100" height="100" fill="#ff0066" x="20" y="20"></rect>
                 <circle id="circle" r="50" cx="190" cy="70" fill="#ff0066"></circle>
                 <ellipse id="ellipse" rx="50" ry="25" cx="310" cy="45" fill="#ff0066"></ellipse>
                 <line id="line" x1="380" y1="20" x2="480" y2="120" stroke-linecap="round" stroke-width="10" stroke="#ff0066"></line>
-                <polyline
-                  id="polyline"
-                  points="70,140 80,180 120,190 80,200 70,240 60,200 20,190 60,180"
-                  fill="none"
-                  stroke-linejoin="round"
-                  stroke-linecap="round"
-                  stroke-width="4"
-                  stroke="#ff0066"
-                ></polyline>
+                <polyline id="polyline" points="70,140 80,180 120,190 80,200 70,240 60,200 20,190 60,180" fill="none" stroke-linejoin="round" stroke-linecap="round" stroke-width="4" stroke="#ff0066"></polyline>
                 <polygon id="polygon" points="190,140 200,180 240,190 200,200 190,240 180,200 140,190 180,180" fill="#ff0066"></polygon>
-                <path
-                  id="path"
-                  d="M260 140H310A20 20 0 1 0 360 190V215C310 265 260 225 260 225Z "
-                  fill="none"
-                  stroke-linejoin="round"
-                  stroke-linecap="round"
-                  stroke-width="4"
-                  stroke="#ff0066"
-                ></path>
-                <text
-                  id="text"
-                  fill="#ff0066"
-                  font-family="'Roboto', 'Noto', sans-serif"
-                  x="391.09375"
-                  y="176.6484375"
-                  svgjs:data='{"leading":"1.3"}'
-                >
+                <path id="path" d="M260 140H310A20 20 0 1 0 360 190V215C310 265 260 225 260 225Z " fill="none" stroke-linejoin="round" stroke-linecap="round" stroke-width="4" stroke="#ff0066"></path>
+                <text id="text" fill="#ff0066" font-family="'Roboto', 'Noto', sans-serif" x="391.09375" y="176.6484375" svgjs:data='{"leading":"1.3"}'>
                   <tspan dy="18.2" x="391.09375" svgjs:data='{"leading":"1.3","newLined":true}'>Sample text.</tspan>
                 </text>
                 <image id="image" width="100" height="100" xlink:href="./vaadin-reindeer-logo.svg" x="20" y="260"></image>
@@ -279,7 +294,6 @@
                 </defs>
               </svg>
             </vcf-svg>
-
             <script>
               window.addEventListener('WebComponentsReady', () => {
                 const toggleZoomable = document.querySelector('#toggle-zoomable');
@@ -289,6 +303,7 @@
 
                 // Element list
                 elementList.value = svg.draw.children()[0].node.id;
+                elementList.addEventListener('change', e => svg.panTo('[id="' + e.target.value + '"]'));
                 elementList.renderer = root => {
                   if (root.firstChild) return;
                   const listBox = document.createElement('vaadin-list-box');
@@ -301,6 +316,7 @@
                   });
                   root.appendChild(listBox);
                 };
+
 
                 // Toggle Zoomable
                 toggleZoomable.addEventListener('click', () => {
@@ -318,10 +334,9 @@
           </template>
         </demo-snippet>
       </vcf-anchor-nav-section>
-
       <vcf-anchor-nav-section id="draggable-element-events" name="Draggable and Element Events">
-        <h2 slot="header" class="hidden">Draggable and Element Events</h2>
-        <div slot="header" class="hidden">Click the element to toggle <code>draggable</code> events.</div>
+        <h2 slot="header">Draggable and Element Events</h2>
+        <div slot="header">Click the element to toggle <code>draggable</code> events.</div>
         <demo-snippet>
           <template>
             <style>
@@ -329,19 +344,21 @@
                 cursor: pointer;
                 user-select: none;
               }
+
               #draggable g.draggable {
                 fill: var(--lumo-primary-color);
               }
+
               #draggable g.draggable:hover {
                 cursor: grab;
               }
+
               #draggable g.draggable:active {
                 cursor: grabbing;
               }
+
             </style>
-
             <vcf-svg id="draggable"></vcf-svg>
-
             <script>
               window.addEventListener('WebComponentsReady', () => {
                 const svg = document.querySelector('#draggable');
@@ -375,7 +392,7 @@
                   // Animate rect radius change
                   rect
                     .animate(100)
-                    .attr({ rx: borderRadius, ry: borderRadius })
+                    .attr({rx: borderRadius, ry: borderRadius})
                     .after(() => {
                       text.text(draggable ? 'Draggable' : 'Not draggable').center(bbox.x + 50, bbox.y + 50);
 

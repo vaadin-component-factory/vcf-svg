@@ -35,7 +35,11 @@ import '@vaadin-component-factory/vcf-svg';
 Add `<vcf-svg>` element to the page.
 
 ```html
-<vcf-svg></vcf-svg>
+<vcf-svg zoomable>
+  <svg viewbox="0 0 400 200">
+    <rect x="0" y="0" width="100" height="100" draggable="true"></rect>
+  </svg>
+</vcf-svg>
 ```
 
 ## Running demo

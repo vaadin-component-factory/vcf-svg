@@ -39,12 +39,12 @@ const EVENT_ATTR_PREFIX = 'on-';
  *
  * ### Slots
  *
- * Slot name | Content description | Default
+ * Slot name | Description | Default
  * --|--|--
- * _no-slot_ | `<svg>` element to be used or any container element to insert default `<svg>` into. Only first element is used. | `<svg></svg>`
- * _svg_ | `<svg>` element to be used or any container element to insert default `<svg>` into. Only first element is used. | `<svg></svg>`
+ * _no-slot_ | Add main `<svg>` element to be used by the component or a container element to insert default `<svg>` into. | `<svg></svg>`
+ * _svg_ | Add main `<svg>` element to be used by the component or a container element to insert default `<svg>` into. | `<svg></svg>`
  *
- * > __NOTE:__ If slotted element not an `<svg>`, [`SVG()`](https://svgjs.com/docs/3.0/container-elements/#svg-constructor) used to add default.
+ * > __NOTE:__ Only the first element added is used. Also, if slotted element not an `<svg>`, [`SVG()`](https://svgjs.com/docs/3.0/container-elements/#svg-constructor) used to add default. ALso,
  *
  * ### Styling
  *
