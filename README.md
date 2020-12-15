@@ -56,12 +56,15 @@ Add `<vcf-svg>` element to the page.
 
 This is the client-side (Polymer 3) web component. If you are looking for this web components server-side (Java) API for the Vaadin Platform, it can be found here: [Svg Component](https://vaadin.com/directory/component/svg-component)
 
-## Vaadin Pro
 
-This component is available in the Vaadin Pro subscription. It is still open source, but you need to have a valid CVAL license in order to use it. Read more at: [Pricing](https://vaadin.com/pricing)
 
-## License
+## License & Author
 
-Commercial Vaadin Add-on License version 3 (CVALv3). For license terms, see: [LICENSE](https://github.com/vaadin-component-factory/vcf-element/blob/master/LICENSE)
+This Add-on is distributed under Apache 2.0
 
-Vaadin collects development time usage statistics to improve this product. For details and to opt-out, see: [Vaadin Usage Statistics](https://github.com/vaadin/vaadin-usage-statistics)
+Component Factory svg is written by Vaadin Ltd.
+
+### Sponsored development
+Major pieces of development of this add-on has been sponsored by multiple customers of Vaadin. Read more  about Expert on Demand at: [Support](https://vaadin.com/support) and  [Pricing](https://vaadin.com/pricing)
+
+
