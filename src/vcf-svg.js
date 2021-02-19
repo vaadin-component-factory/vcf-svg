@@ -23,7 +23,6 @@ import { ElementMixin } from '@vaadin/vaadin-element-mixin';
 import { SVG, Svg, List, Element, Shape } from '@svgdotjs/svg.js';
 import { zoom, zoomIdentity, select, event } from 'd3';
 import '../lib/svg.draggable';
-import '@vaadin/vaadin-license-checker/vaadin-license-checker';
 import '@vaadin/vaadin-button';
 import './vcf-svg-icons';
 
@@ -173,7 +172,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   }
 
   static get version() {
-    return '1.0.6';
+    return '1.0.7';
   }
 
   static get properties() {
@@ -709,17 +708,6 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
     return this.__timeouts.filter(timeout => timeout && timeout.id === id)[0];
   }
 
-  /**
-   * @protected
-   */
-  static _finalizeClass() {
-    super._finalizeClass();
-    const devModeCallback = window.Vaadin.developmentModeCallback;
-    const licenseChecker = devModeCallback && devModeCallback['vaadin-license-checker'];
-    if (typeof licenseChecker === 'function') {
-      licenseChecker(VcfSvg);
-    }
-  }
 
   /**
    * Fired when the methods for the `<svg>` in the `"svg"` slot can be used.
