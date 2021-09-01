@@ -259,7 +259,12 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
    * @returns {List}
    */
   get children() {
-    return this.draw.children();
+    // draw can be null
+    if (this.draw) {
+      return this.draw.children();
+    } else {
+      return [];
+    }
   }
 
   ready() {
@@ -707,7 +712,6 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   __getTimeout(id) {
     return this.__timeouts.filter(timeout => timeout && timeout.id === id)[0];
   }
-
 
   /**
    * Fired when the methods for the `<svg>` in the `"svg"` slot can be used.
