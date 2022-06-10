@@ -3,10 +3,10 @@
     "allowJs": true,
     "declaration": true,
     "emitDeclarationOnly": true,
-    "outDir": "./",
+    "outDir": "src",
     "declarationMap": true,
     "skipLibCheck": true
   },
   "include": ["src/*.js"],
-  "exclude": ["lib"]
+  "exclude": []
 }
