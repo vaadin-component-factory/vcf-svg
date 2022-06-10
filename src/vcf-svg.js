@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-
 /**
  * @license
  * Copyright (C) 2015 Vaadin Ltd.
@@ -10,13 +8,11 @@
 
 import { html, PolymerElement } from '@polymer/polymer/polymer-element';
 import { ThemableMixin } from '@vaadin/vaadin-themable-mixin';
-import { ElementMixin } from '@vaadin/vaadin-element-mixin';
-// eslint-disable-next-line no-unused-vars
+import { ElementMixin } from '@vaadin/component-base/src/element-mixin';
 import { SVG, Svg, List, Element, Shape } from '@svgdotjs/svg.js';
 import { zoom, zoomIdentity, select, event } from 'd3';
 import '../lib/svg.draggable';
-import '@vaadin/vaadin-license-checker/vaadin-license-checker';
-import '@vaadin/vaadin-button';
+import '@vaadin/button';
 import './vcf-svg-icons';
 
 const SVG_NOT_READY = 'Svg not ready. Try using the `svg-ready` event.';
@@ -177,7 +173,10 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
        *
        * @type {Svg}
        */
-      draw: Svg,
+      draw: {
+        type: Object,
+        value: () => Svg
+      },
 
       /**
        * 1. SVG() [Constructor](https://svgjs.com/docs/3.0/container-elements/#svg-constructor)

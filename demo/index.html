@@ -62,7 +62,7 @@
           max-width: 1000px;
         }
 
-        .nav {
+        .nav-btn {
           margin: var(--lumo-space-l) var(--lumo-space-m) var(--lumo-space-l) calc(var(--lumo-button-size) * -1 / 6);
         }
 
@@ -82,6 +82,7 @@
 
         code:not(.main) {
           font-family: 'Fira Code', monospace;
+          font-size: 12px;
         }
 
         #copyButton {
@@ -103,32 +104,19 @@
           font-size: 12px;
         }
 
-        .overflow:not(.top) {
-          box-shadow: inset 0 8px 10px -15px #000;
-        }
-
-        .overflow:not(.top):not(.bottom) {
-          box-shadow: inset 0 8px 10px -15px #000, inset 0 -12px 15px -20px #000;
-        }
-
-        .overflow:not(.bottom) {
-          box-shadow: inset 0 -12px 15px -20px #000;
-        }
-
       </style>
     </custom-style>
   </head>
   <body>
     <vcf-anchor-nav fullscreen>
       <a slot="header" href="/api/#/elements/Vaadin.VcfSvg">
-        <vaadin-button theme="tertiary" class="nav">
+        <vaadin-button theme="tertiary" class="nav-btn">
           <iron-icon icon="lumo:angle-right" slot="suffix"></iron-icon>
           API
         </vaadin-button>
       </a>
       <h1 slot="header" class="main">
         <code class="main">&lt;vcf-svg&gt;</code>
-        <a href="https://svgjs.com/docs/3.0/" title="vcf-svg is a web component wrapper for SVG.js"><img src="svg-js-logo.png" /></a>
       </h1>
       <vcf-anchor-nav-section id="elements-example" name="All Elements">
         <h2 slot="header">All Elements</h2>
@@ -266,10 +254,13 @@
                 <circle id="circle" r="50" cx="190" cy="70" fill="#ff0066"></circle>
                 <ellipse id="ellipse" rx="50" ry="25" cx="310" cy="45" fill="#ff0066"></ellipse>
                 <line id="line" x1="380" y1="20" x2="480" y2="120" stroke-linecap="round" stroke-width="10" stroke="#ff0066"></line>
-                <polyline id="polyline" points="70,140 80,180 120,190 80,200 70,240 60,200 20,190 60,180" fill="none" stroke-linejoin="round" stroke-linecap="round" stroke-width="4" stroke="#ff0066"></polyline>
+                <polyline id="polyline" points="70,140 80,180 120,190 80,200 70,240 60,200 20,190 60,180" fill="none" stroke-linejoin="round"
+                          stroke-linecap="round" stroke-width="4" stroke="#ff0066"></polyline>
                 <polygon id="polygon" points="190,140 200,180 240,190 200,200 190,240 180,200 140,190 180,180" fill="#ff0066"></polygon>
-                <path id="path" d="M260 140H310A20 20 0 1 0 360 190V215C310 265 260 225 260 225Z " fill="none" stroke-linejoin="round" stroke-linecap="round" stroke-width="4" stroke="#ff0066"></path>
-                <text id="text" fill="#ff0066" font-family="'Roboto', 'Noto', sans-serif" x="391.09375" y="176.6484375" svgjs:data='{"leading":"1.3"}'>
+                <path id="path" d="M260 140H310A20 20 0 1 0 360 190V215C310 265 260 225 260 225Z " fill="none" stroke-linejoin="round"
+                      stroke-linecap="round" stroke-width="4" stroke="#ff0066"></path>
+                <text id="text" fill="#ff0066" font-family="'Roboto', 'Noto', sans-serif" x="391.09375" y="176.6484375"
+                      svgjs:data='{"leading":"1.3"}'>
                   <tspan dy="18.2" x="391.09375" svgjs:data='{"leading":"1.3","newLined":true}'>Sample text.</tspan>
                 </text>
                 <image id="image" width="100" height="100" xlink:href="./vaadin-reindeer-logo.svg" x="20" y="260"></image>

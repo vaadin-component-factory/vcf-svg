@@ -1,9 +1,9 @@
 import '@polymer/iron-demo-helpers/demo-pages-shared-styles';
 import '@polymer/iron-demo-helpers/demo-snippet';
 import '@polymer/iron-icon';
-import '@vaadin/vaadin-button';
-import '@vaadin/vaadin-text-field';
-import '@vaadin/vaadin-select';
+import '@vaadin/button';
+import '@vaadin/text-field';
+import '@vaadin/select';
 import '@vaadin/vaadin-lumo-styles/icons';
 import '@vaadin/vaadin-lumo-styles/typography';
 import '@vaadin-component-factory/vcf-anchor-nav';
@@ -22,7 +22,6 @@ window.addEventListener('WebComponentsReady', () => {
     const copyIcon = document.createElement('iron-icon');
     const markedElement = codeContainer.querySelector('marked-element');
     // Copy <vaadin-button>
-    codeContainer.insertBefore(copyVaadinButton, markedElement);
     copyVaadinButton.id = 'copyVaadinButton';
     copyVaadinButton.setAttribute('theme', 'icon');
     copyVaadinButton.setAttribute('title', 'Copy to clipboard');
@@ -37,9 +36,6 @@ window.addEventListener('WebComponentsReady', () => {
     copyIcon.setAttribute('icon', 'vcf-demo:copy');
     element.shadowRoot.appendChild(codeContainerStyles);
     codeContainerStyles.innerHTML = mainCodeContainerStyles.innerHTML;
-    if (codeContainer.scrollHeight !== codeContainer.clientHeight) {
-      codeContainer.classList.add('overflow');
-      codeContainer.classList.add('top');
-    }
+    codeContainer.insertBefore(copyVaadinButton, markedElement);
   });
 });

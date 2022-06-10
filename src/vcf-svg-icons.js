@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { html } from '@polymer/polymer/polymer-element.js';
 import { registerStyles, css } from '@vaadin/vaadin-themable-mixin/register-styles.js';
 import '@polymer/iron-iconset-svg';

@@ -28,19 +28,8 @@
     "build:demo": "webpack",
     "build:lib": "rollup -c",
     "build:prod": "run-s build:api build:demo",
-    "publish": "node util/publish.js"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "src/*.js": [
-      "eslint --fix",
-      "prettier --write",
-      "git add"
-    ]
+    "publish": "node util/publish.js",
+    "prepublishOnly": "tsc"
   },
   "files": [
     "src",
@@ -48,13 +37,12 @@
   ],
   "dependencies": {
     "@polymer/iron-icon": "^3.0.1",
-    "@polymer/polymer": "3.2.0",
+    "@polymer/polymer": "^3.4.0",
     "@svgdotjs/svg.js": "^3.0.16",
-    "@vaadin/vaadin-button": "2.2.2",
-    "@vaadin/vaadin-element-mixin": "^2.1.3",
-    "@vaadin/vaadin-license-checker": "^2.1.2",
-    "@vaadin/vaadin-lumo-styles": "1.5.0",
-    "@vaadin/vaadin-themable-mixin": "^1.5.1",
+    "@vaadin/button": "^23.1.0",
+    "@vaadin/component-base": "^23.1.0",
+    "@vaadin/vaadin-lumo-styles": "^23.1.0",
+    "@vaadin/vaadin-themable-mixin": "^23.1.0",
     "d3": "^5.16.0"
   },
   "devDependencies": {
@@ -67,12 +55,12 @@
     "@polymer/test-fixture": "^4.0.2",
     "@rollup/plugin-commonjs": "^12.0.0",
     "@rollup/plugin-node-resolve": "^8.0.0",
-    "@vaadin-component-factory/vcf-anchor-nav": "^1.0.4",
-    "@vaadin/vaadin-select": "2.1.7",
-    "@vaadin/vaadin-text-field": "2.5.5",
+    "@vaadin-component-factory/vcf-anchor-nav": "^23.0.1",
+    "@vaadin-component-factory/vcf-element-util": "^0.2.8",
+    "@vaadin/select": "^23.1.0",
+    "@vaadin/text-field": "^23.1.0",
     "@webcomponents/webcomponentsjs": "^2.0.0",
     "babel-cli": "^6.26.0",
-    "babel-eslint": "^10.0.2",
     "babel-loader": "^8.0.6",
     "babel-plugin-template-html-minifier": "^3.1.0",
     "babel-plugin-transform-custom-element-classes": "^0.1.0",
@@ -83,10 +71,6 @@
     "colors": "^1.3.3",
     "compression-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^5.0.4",
-    "eslint": "^5.16.0",
-    "eslint-config-prettier": "^6.0.0",
-    "eslint-config-vaadin": "^0.2.7",
-    "eslint-plugin-html": "^6.0.0",
     "html-replace-webpack-plugin": "^2.5.5",
     "html-webpack-plugin": "^3.2.0",
     "html-webpack-tags-plugin": "^2.0.15",
@@ -95,12 +79,12 @@
     "mocha": "^5.2.0",
     "npm-run-all": "^4.1.5",
     "polymer-cli": "^1.9.10",
-    "prettier": "^1.17.1",
     "prompt": "^1.0.0",
     "replace-in-file": "^4.1.2",
     "rollup": "^2.10.9",
     "shelljs": "^0.8.3",
     "terser-webpack-plugin": "^1.4.1",
+    "typescript": "^4.7.3",
     "uglify-template-string-loader": "^1.1.1",
     "wct-mocha": "^1.0.0",
     "webpack": "^4.39.2",
