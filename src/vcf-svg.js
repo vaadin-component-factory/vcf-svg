@@ -29,7 +29,7 @@ const EVENT_ATTR_PREFIX = 'on-';
 /**
  * `<vcf-svg>` is a Web component for manipulating and animating SVG graphics.
  *
- * - Web Component wrapper for the JS library [SVG.js](https://svgjs.com/docs/3.0).
+ * - Web Component wrapper for the JS library [SVG.js](https://svgjs.dev/docs/3.0).
  * - Zoom and pan functionality implemented with [d3-zoom](https://github.com/d3/d3-zoom).
  * - Draggable functionality implemented with plugin [svg.draggable.js](https://github.com/svgdotjs/svg.draggable.js).
  *
@@ -48,7 +48,7 @@ const EVENT_ATTR_PREFIX = 'on-';
  * _no-slot_ | Add main `<svg>` element to be used by the component or a container element to insert default `<svg>` into. | `<svg></svg>`
  * _svg_ | Add main `<svg>` element to be used by the component or a container element to insert default `<svg>` into. | `<svg></svg>`
  *
- * > __NOTE:__ Only the first element added is used. Also, if slotted element not an `<svg>`, [`SVG()`](https://svgjs.com/docs/3.0/container-elements/#svg-constructor) used to add default. ALso,
+ * > __NOTE:__ Only the first element added is used. Also, if slotted element not an `<svg>`, [`SVG()`](https://svgjs.dev/docs/3.0/container-elements/#svg-constructor) used to add default. ALso,
  *
  * ### Styling
  *
@@ -175,20 +175,17 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   static get properties() {
     return {
       /**
-       * Main [Svg](https://svgjs.com/docs/3.0/container-elements/#svg-svg) element.
+       * Main [Svg](https://svgjs.dev/docs/3.0/container-elements/#svg-svg) element.
        *
        * Returns `<svg>` (or `<g part="zoomContainer">` if `zoomable` is enabled).
        *
        * @type {Svg}
        */
-      draw: {
-        type: Object,
-        value: () => Svg
-      },
+      draw: Svg,
 
       /**
-       * 1. SVG() [Constructor](https://svgjs.com/docs/3.0/container-elements/#svg-constructor)
-       * 1. SVG() [Find](https://svgjs.com/docs/3.0/referencing-creating-elements/#svg)
+       * 1. SVG() [Constructor](https://svgjs.dev/docs/3.0/container-elements/#svg-constructor)
+       * 1. SVG() [Find](https://svgjs.dev/docs/3.0/referencing-creating-elements/#svg)
        * @type {SVG}
        */
       SVG: {
@@ -255,7 +252,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   }
 
   /**
-   * Returns [SVG.List](https://svgjs.com/docs/3.0/classes/#svg-list) of child elements.
+   * Returns [SVG.List](https://svgjs.dev/docs/3.0/classes/#svg-list) of child elements.
    * @returns {List}
    */
   get children() {
@@ -293,7 +290,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
    *
    * _Used by the [Java API](https://github.com/vaadin-component-factory/svg)._
    *
-   * @param {Object} element [Shape](https://svgjs.com/docs/3.0/shape-elements/) `element` or `attributes` object (described above).
+   * @param {Object} element [Shape](https://svgjs.dev/docs/3.0/shape-elements/) `element` or `attributes` object (described above).
    * @param {String} parentElementId Id of element to add this element to.
    */
   add(element, parentElementId) {
@@ -343,7 +340,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
    * Find elements matching `selector`.
    * If `parentElementId` is specified, will search inside the element with that id.
    *
-   * Returns [SVG.List](https://svgjs.com/docs/3.0/classes/#svg-list)
+   * Returns [SVG.List](https://svgjs.dev/docs/3.0/classes/#svg-list)
    *
    * @param {String} selector CSS selector
    * @param {String} parentElementId Id of parent element
@@ -715,7 +712,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
 
   /**
    * Fired when the methods for the `<svg>` in the `"svg"` slot can be used.
-   * - `e.detail` __Object__ The `draw` property. Main [Svg](https://svgjs.com/docs/3.0/container-elements/#svg-svg) element.
+   * - `e.detail` __Object__ The `draw` property. Main [Svg](https://svgjs.dev/docs/3.0/container-elements/#svg-svg) element.
    *
    * @event svg-ready
    */

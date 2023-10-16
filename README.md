@@ -6,7 +6,7 @@
 
 Web Component for manipulating and animating [SVG](https://developer.mozilla.org/en-US/docs/Web/SVG).
 
-- Web Component wrapper for the JS library [SVG.js](https://svgjs.com/docs/3.0).
+- Web Component wrapper for the JS library [SVG.js](https://svgjs.dev/docs/3.0).
 - Zoom and pan functionality implemented with [d3-zoom](https://github.com/d3/d3-zoom).
 - Draggable functionality implemented with plugin [svg.draggable.js](https://github.com/svgdotjs/svg.draggable.js).
 
