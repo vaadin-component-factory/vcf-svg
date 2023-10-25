@@ -21,7 +21,6 @@ import { SVG, Svg, List, Element, Shape } from '@svgdotjs/svg.js';
 import { zoom, zoomIdentity, select, event } from 'd3';
 import '../lib/svg.draggable';
 import '@vaadin/button';
-import './vcf-svg-icons';
 
 const SVG_NOT_READY = 'Svg not ready. Try using the `svg-ready` event.';
 const EVENT_ATTR_PREFIX = 'on-';
@@ -153,7 +152,7 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
       <slot id="svgSlot" name="svg" on-slotchange="_onSvgSlotChange"></slot>
       <div id="toolbar" part="toolbar">
         <vaadin-button id="resetZoom" theme="tertiary icon" title="Reset Zoom" part="reset-zoom-button">
-          <iron-icon icon="vcf-svg:bullseye"></iron-icon>
+          <vaadin-icon icon="vaadin:bullseye"></vaadin-icon>
         </vaadin-button>
         <div id="zoom" part="zoom-display">
           <span>[[zoom.scale]]</span>
