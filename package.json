@@ -1,6 +1,6 @@
 {
   "name": "@vaadin-component-factory/vcf-svg",
-  "version": "24.0.0",
+  "version": "24.0.1",
   "description": "Web component wrapper for SVG.js.",
   "main": "src/vcf-svg.js",
   "module": "src/vcf-svg.js",
@@ -61,7 +61,7 @@
     "@vaadin-component-factory/vcf-element-util": "^0.2.8",
     "@vaadin/select": "^24.2.0",
     "@vaadin/text-field": "^24.2.0",
-    "@vaadin/icons" : "^24.2.0",
+    "@vaadin/icons": "^24.2.0",
     "@webcomponents/webcomponentsjs": "^2.0.0",
     "babel-cli": "^6.26.0",
     "babel-loader": "^8.0.6",
