@@ -1,6 +1,6 @@
 {
   "name": "@vaadin-component-factory/vcf-svg",
-  "version": "23.1.0",
+  "version": "23.1.1",
   "description": "Web component wrapper for SVG.js.",
   "main": "src/vcf-svg.js",
   "module": "src/vcf-svg.js",
@@ -80,7 +80,7 @@
     "html-webpack-tags-plugin": "^2.0.15",
     "husky": "^2.3.0",
     "lint-staged": "^8.2.1",
-    "mocha": "^5.2.0",
+    "mocha": "10.1.0",
     "npm-run-all": "^4.1.5",
     "polymer-cli": "^1.9.10",
     "prompt": "^1.0.0",
