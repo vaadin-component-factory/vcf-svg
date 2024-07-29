@@ -710,6 +710,21 @@ class VcfSvg extends ElementMixin(ThemableMixin(PolymerElement)) {
   }
 
   /**
+   * Sets title to element with given parentId.
+   * 
+   * @param {String} titleText title text
+   * @param {String} parentId id of element to set title
+   */
+  _setTitle(titleText, parentId){
+	  this._afterSvgReady(() => {
+		  let parentElement = this._getParentElement(parentId);
+		  if(parentElement) {
+			  parentElement.element('title').words(titleText);
+		  } 
+	  });
+  } 
+
+  /**
    * Fired when the methods for the `<svg>` in the `"svg"` slot can be used.
    * - `e.detail` __Object__ The `draw` property. Main [Svg](https://svgjs.dev/docs/3.0/container-elements/#svg-svg) element.
    *
