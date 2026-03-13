@@ -4,8 +4,6 @@ import '@vaadin/button';
 import '@vaadin/text-field';
 import '@vaadin/select';
 import '@vaadin/icons';
-import '@vaadin/vaadin-lumo-styles/icons';
-import '@vaadin/vaadin-lumo-styles/typography';
 import '@vaadin-component-factory/vcf-anchor-nav';
 import '../src/vcf-svg';
 
